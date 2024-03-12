@@ -1,0 +1,441 @@
+openapi: '3.0.2'
+info:
+  title: wallet-app
+  version: '1.3.0'
+  description: 'STD2095 - STD22113'
+servers:
+  - url: https://api.server.test/v1
+tags:
+  - name: Account
+    description: account operation
+  - name: Currency
+    description: currency operation 
+  - name: Transaction
+    description: transaction operation
+paths:
+  /Account:
+    get:
+      tags:
+        - "Account"
+      summary: return all accounts 
+      description: get  all existing accounts
+      parameters:
+        - $ref: '#/components/parameters/queryPage'
+      responses:
+        200:
+          $ref: '#/components/responses/AccountList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    post: 
+      tags:
+        - "Account"
+      summary: add  account 
+      description: create a new account 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Account'
+      responses:
+        200:
+         $ref: '#/components/responses/AccountList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    put: 
+      tags:
+        - "Account"
+      summary: return an updated account 
+      description: update an account by its 
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/Account'
+      responses:
+        200:
+         $ref: '#/components/responses/AccountList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  /Account/{id}: 
+    get:
+      tags:
+        - "Account"
+      summary: return an account
+      description: find an account by its id 
+      parameters:
+        - in: path
+          name: id 
+          description: id of the account 
+          required: true 
+          schema:
+            type: string 
+      responses:
+        200:
+         $ref: '#/components/responses/AccountList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+   
+  /Currency:
+    get: 
+      tags:
+        - "Currency"
+      summary: retur all currency 
+      description: find all existing currency 
+      parameters:
+        - $ref: '#/components/parameters/queryPage'
+      responses:
+        200:
+          $ref: '#/components/responses/CurrencyList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    post:  
+      tags:
+        - "Currency"
+      summary: add currency 
+      description: add  new currency 
+      requestBody: 
+        content:
+          application/json:
+            schema: 
+              type: array
+              items: 
+                $ref: '#/components/schemas/Currency'
+      responses:
+        200:
+          $ref: '#/components/responses/CurrencyList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    put:  
+      tags:
+        - "Currency"
+      summary: update currency  
+      description: update a  currency 
+      requestBody: 
+        content:
+          application/json:
+            schema: 
+              type: array
+              items: 
+                $ref: '#/components/schemas/Currency'
+      responses:
+        200:
+          $ref: '#/components/responses/CurrencyList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  /Currency/{idCurrency}: 
+    get:
+      tags:
+        - "Currency"
+      summary: return currency by id 
+      description: find currency by id 
+      parameters:
+        - in: path
+          name: idCurrency 
+          description: id of currency
+          required: true 
+          schema:
+            type: string 
+      responses:
+        200:
+          $ref: '#/components/responses/CurrencyList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  /Transaction:
+    get: 
+      tags:
+        - "Transaction"
+      summary: return all transaction 
+      description: find all existing transaction 
+      parameters:
+        - $ref: '#/components/parameters/queryPage'
+      responses:
+        
+        200:
+          $ref: '#/components/responses/TransactionList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    post: 
+      tags:
+        - "Transaction" 
+      summary: add new transaction 
+      description: add new transaction 
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: array
+              items: 
+                $ref: '#/components/schemas/Transaction'
+
+      responses:
+        
+        200:
+          $ref: '#/components/responses/TransactionList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+    put: 
+      tags:
+        - "Transaction" 
+      summary: return updated transaction 
+      description: update a transaction 
+      requestBody:
+        content:
+          application/json:
+            schema: 
+              type: array
+              items: 
+                $ref: '#/components/schemas/Transaction'
+
+      responses:
+        
+        200:
+          $ref: '#/components/responses/TransactionList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+  /Transaction/{idTransaction}: 
+    get: 
+      tags:
+        - "Transaction"
+      summary: return one transaction by id²
+      description: find transaction by id 
+      parameters:
+        - in: path 
+          name: idTransaction 
+          description: id of transaction 
+          required: true 
+          schema: 
+            type: string 
+      responses:
+        
+        200:
+          $ref: '#/components/responses/TransactionList200'
+        400:
+          $ref: '#/components/responses/400'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+
+
+components:
+  schemas:
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+        Name:
+          type: string
+        sold:
+          type: number
+        Transactions:
+          type: array
+          items:
+              $ref: '#/components/schemas/Transaction'
+        currency:
+          $ref: '#/components/schemas/Currency'
+        Type:
+          enum:
+            - bank
+            - cash
+            - mobile money
+        
+          
+            
+    Currency:
+      type: object
+      properties:
+        id:
+          type: string
+        code:
+          type: string
+        name: 
+          type: string
+    Transaction:
+      type: object
+      properties:
+        id: 
+          type: string
+        label:
+          type: string
+        amount: 
+          type: number
+        transactionDate:  
+          type: string
+          format: date
+        Type:
+          enum:
+            - credit
+            - debit
+    responseStatus:
+      type: object
+      properties:
+        schema: 
+            type: object
+            properties:
+               
+                  code:
+                    
+                    type: integer
+                    example: 200
+                    
+                  message: 
+                    type: string
+                    example: OK
+    responseBodyTemplate:
+      type: object
+      properties:
+        status:
+          $ref: '#/components/schemas/responseStatus'
+        body:
+          type: object
+    successResponseAccount:
+      allOf:
+        - $ref: '#/components/schemas/responseBodyTemplate'
+        - properties:
+            body:
+              type: array
+              items:
+                $ref: '#/components/schemas/Account'
+    successCurrencyResponse:
+      allOf:
+        - $ref: '#/components/schemas/responseBodyTemplate'
+        - properties:
+            body:
+              type: array
+              items:
+                $ref: '#/components/schemas/Currency'
+    successTransactionResponse:
+      allOf:
+        - $ref: '#/components/schemas/responseBodyTemplate'
+        - properties:
+            body:
+              type: array
+              items:
+                $ref: '#/components/schemas/Transaction'
+    badRequest:
+      allOf:
+        - $ref: '#/components/schemas/responseBodyTemplate'
+        - example:
+            status:
+              code: 400
+              message: bad request
+            body: {}
+    forbidden:
+      allOf:
+        - $ref: '#/components/schemas/responseBodyTemplate'
+        - example:
+            status:
+              code: 403
+              message: Forbiedden
+            body: {}
+    ServerError:
+      allOf:
+        - $ref: '#/components/schemas/responseBodyTemplate'
+        - example:
+            status:
+              code: 500
+              message: internal server error
+            body: {}
+  parameters:
+    queryPage:
+      name: queryPagination
+      in: query
+      description: pagination using the query
+      required: false
+      schema:
+        type: object
+        properties:
+          page: 
+            type: integer
+            default: 1
+          pageSize:
+            type: integer
+            default: 50
+    
+  responses:
+    
+    AccountList200:
+      description: list of accounts
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/successResponseAccount'
+    CurrencyList200:
+      description: list of currency
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/successCurrencyResponse'
+    TransactionList200:
+      description: list of transaction
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/successTransactionResponse'
+    400:
+      description: bad request 
+      content:
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/badRequest'
+    403:
+      description: forbidden 
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/forbidden'
+    500:
+      description: server error 
+      content:
+        application/json:
+          schema: 
+            $ref: '#/components/schemas/ServerError'
