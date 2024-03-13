@@ -1,0 +1,229 @@
+openapi: 3.0.0
+info:
+ title: Bank Account Management API
+ version: 1.0.0
+paths:
+ /account:
+    post:
+      summary: Create a new account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountCreate'
+      responses:
+        '201':
+          description: Account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+    put:
+      summary: Update account information
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AccountUpdate'
+      responses:
+        '200':
+          description: Account information updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountResponse'
+ /account/{id}/withdrawals:
+    post:
+      summary: Perform a withdrawal
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WithdrawalRequest'
+      responses:
+        '200':
+          description: Withdrawal performed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WithdrawalResponse'
+ /account/{id}/balance:
+    get:
+      summary: Check account balance
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/DateQuery'
+      responses:
+        '200':
+          description: Account balance
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+ /account/{id}/deposits:
+    post:
+      summary: Perform a deposit
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepositRequest'
+      responses:
+        '201':
+          description: Deposit performed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DepositResponse'
+ /account/{id}/transfers:
+    post:
+      summary: Perform a transfer
+      parameters:
+        - $ref: '#/components/parameters/AccountId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransferRequest'
+      responses:
+        '201':
+          description: Transfer performed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransferResponse'
+components:
+ parameters:
+    AccountId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    DateQuery:
+      name: date
+      in: query
+      schema:
+        type: string
+        format: date
+ schemas:
+    Account: 
+      type: object
+      properties:
+        name:
+          type: string
+        firstName:
+          type: string
+        dateOfBirth:
+          type: number
+        monthlyNetIncome:
+          type: number
+        
+    AccountCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        firstName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        monthlyNetIncome:
+          type: number
+        accountNumber:
+          type: string
+    AccountUpdate:
+      type: object
+      properties:
+        name:
+          type: string
+        firstName:
+          type: string
+        dateOfBirth:
+          type: string
+          format: date
+        monthlyNetIncome:
+          type: number
+    AccountResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        message:
+          type: string
+    WithdrawalRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        dateTime:
+          type: string
+          format: date-time
+    WithdrawalResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    BalanceResponse:
+      type: object
+      properties:
+        principalBalance:
+          type: number
+        loans:
+          type: number
+        loanInterest:
+          type: number
+    DepositRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+        effectiveDate:
+          type: string
+          format: date
+        registrationDate:
+          type: string
+          format: date
+    DepositResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    TransferRequest:
+      type: object
+      properties:
+        amount:
+          type: number
+        reason:
+          type: string
+        effectiveDate:
+          type: string
+          format: date
+        registrationDate:
+          type: string
+          format: date
+        destinationAccount:
+          type: integer
+        sameBank:
+          type: boolean
+    TransferResponse:
+      type: object
+      properties:
+        transferReference:
+          type: string
+        message:
+          type: string
