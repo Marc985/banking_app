@@ -1,3 +1,4 @@
+CREATE  DATABASE digital_bank;
 
 CREATE TABLE account (
     account_id serial PRIMARY KEY,
@@ -36,3 +37,5 @@ CREATE TABLE IF NOT EXISTS transfert (
     registration_date date,
     status varchar(7) CHECK (status IN ('cancel', 'pending', 'success'))
 );
+
+--//CREATE EXTENSION IF NOT EXISTS "uuid-ossp"; if uuid doesn't work!
