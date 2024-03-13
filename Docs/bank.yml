@@ -103,6 +103,53 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferResponse'
+ /transaction/{id}/categorize:
+    put:
+      summary: Catégoriser une transaction existante
+      parameters:
+        - $ref: '#/components/parameters/TransactionId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TransactionCategorizationRequest'
+      responses:
+        '200':
+          description: Transaction catégorisée avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TransactionCategorizationResponse'
+ /transactions/categorize:
+    put:
+      summary: Catégoriser plusieurs transactions à la fois
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MultipleTransactionCategorizationRequest'
+      responses:
+        '200':
+          description: Transactions catégorisées avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MultipleTransactionCategorizationResponse'
+ /dashboard:
+    get:
+      summary: Obtenir les données du tableau de bord
+      parameters:
+        - $ref: '#/components/parameters/DateRange'
+        - $ref: '#/components/parameters/Interval'
+      responses:
+        '200':
+          description: Données du tableau de bord obtenues avec succès
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DashboardData'
 components:
  parameters:
     AccountId:
@@ -117,6 +164,30 @@ components:
       schema:
         type: string
         format: date
+    TransactionId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+    DateRange:
+      name: date_range
+      in: query
+      schema:
+        type: object
+        properties:
+          start_date:
+            type: string
+            format: date
+          end_date:
+            type: string
+            format: date
+    Interval:
+      name: interval
+      in: query
+      schema:
+        type: string
+        enum: [day, month]
  schemas:
     Account: 
       type: object
@@ -227,3 +298,38 @@ components:
           type: string
         message:
           type: string
+    TransactionCategorizationRequest:
+      type: object
+      properties:
+        category:
+          type: string
+        comment:
+          type: string
+    TransactionCategorizationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    MultipleTransactionCategorizationRequest:
+      type: object
+      properties:
+        transactions:
+          type: array
+          items:
+            $ref: '#/components/schemas/TransactionCategorizationRequest'
+    MultipleTransactionCategorizationResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    DashboardData:
+      type: object
+      properties:
+        pie_chart_data:
+          type: object
+          additionalProperties:
+            type: number
+        custom_chart_data:
+          type: object
+          additionalProperties:
+            type: number
