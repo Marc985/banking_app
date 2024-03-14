@@ -16,13 +16,14 @@ public class Account {
     String clientName;
     String clientLastName;
     Date birthdate;
-    BigDecimal monthlyNetIncome;
+    double monthlyNetIncome;
 
-    public Account(String clientName, String clientLastName, Date birthdate, BigDecimal monthlyNetIncome){
+    public Account(String clientName, String clientLastName, Date birthdate, double monthlyNetIncome){
         this.clientName=clientLastName;
         this.clientLastName=clientLastName;
         this.birthdate=birthdate;
         this.monthlyNetIncome=monthlyNetIncome;
     }
+
 
 }

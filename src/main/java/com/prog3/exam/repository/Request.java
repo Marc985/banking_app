@@ -31,7 +31,6 @@ public abstract class Request<T> implements  CrudOperation<T> {
         return results;
     }
 
-
     public T save(T entity) {
         try {
             String tableName = getTableName();

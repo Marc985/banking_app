@@ -1,6 +1,7 @@
 package com.prog3.exam.controller;
 
 import com.prog3.exam.entity.Account;
+import com.prog3.exam.entity.Sold;
 import com.prog3.exam.repository.AccountCrudOperation;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,4 +30,8 @@ public class AccountController {
     public Account createAccount(@RequestBody Account accouont){
         return accountCrudOperation.save(accouont);
     }
+@GetMapping("/account/{id}")
+    public Account findById(@PathVariable  long id){
+       return accountCrudOperation.findAccountById(id);
+}
 }
