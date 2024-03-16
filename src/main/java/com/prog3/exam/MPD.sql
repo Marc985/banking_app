@@ -5,7 +5,8 @@ CREATE  TABLE IF NOT EXISTS  account(
     client_name varchar(80),
     client_last_name varchar(80),
     birthdate date,
-    monthly_net_income double precision
+    monthly_net_income double precision,
+    is_eligible boolean default false
 );
 
 CREATE TABLE IF NOT EXISTS sold(

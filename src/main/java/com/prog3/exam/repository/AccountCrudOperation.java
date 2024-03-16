@@ -6,6 +6,7 @@ import com.prog3.exam.entity.Sold;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.swing.text.StyledEditorKit;
 import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -77,7 +78,8 @@ public class AccountCrudOperation extends Request<Account> {
                      resultSet.getString("client_name"),
                      resultSet.getString("client_last_name"),
                      resultSet.getDate("birthdate"),
-                     resultSet.getDouble("monthly_net_income")
+                     resultSet.getDouble("monthly_net_income"),
+                     resultSet.getBoolean("is_eligible")
              );
 
             }
@@ -85,6 +87,21 @@ public class AccountCrudOperation extends Request<Account> {
             e.printStackTrace();
         }
         return account;
+    }
+
+    public String updateEligibility(float idAccount, boolean option){
+        String sql="update account set is_eligible="+option;
+        String message="error while trying to update";
+        try{
+            PreparedStatement preparedStatement=connection.prepareStatement(sql);
+           int response= preparedStatement.executeUpdate();
+           if (response!=0){
+               message="this account is now eligble to make withdrawal";
+           }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return message;
     }
 
     @Override

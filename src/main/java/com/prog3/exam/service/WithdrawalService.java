@@ -23,26 +23,29 @@ public class WithdrawalService {
         Sold sold=soldCrudOperation.findLastSoldByIdAccount(idAccount);
         double actualSold=sold.getBalance();
         double allowedCredit=account.getMonthlyNetIncome()/3;
-        if((allowedCredit+actualSold)>=amount){
-            Sold newSold=new Sold();
-            newSold.setIdSold(30);
+     if(account.getIsEligible()){
+         if((allowedCredit+actualSold)>=amount){
+             Sold newSold=new Sold();
+             newSold.setIdSold(30);
 
-            newSold.setLoansinterest(1);
-            newSold.setDate(date);
-            newSold.setAccountId(idAccount);
-            if(actualSold>=amount){
-                newSold.setBalance(actualSold-amount);
-                newSold.setLoans(0);
-            }
+             newSold.setLoansinterest(1);
+             newSold.setDate(date);
+             newSold.setAccountId(idAccount);
+             if(actualSold>=amount){
+                 newSold.setBalance(actualSold-amount);
+                 newSold.setLoans(0);
+             }
 
-            else{
-                newSold.setLoans(actualSold-amount);
-                newSold.setBalance(0);
-            }
-            soldCrudOperation.save(newSold);
-            return "success";
-        }
-    else
-        return "the allowed credit + your actual sold don't cover the withdrawal";
-    }
+             else{
+                 newSold.setLoans(actualSold-amount);
+                 newSold.setBalance(0);
+             }
+             soldCrudOperation.save(newSold);
+             return "success";
+         }
+         else
+             return "the allowed credit + your actual sold don't cover the withdrawal";
+     }
+     return  "this account is not eligible to make withdrawal";
+     }
 }
