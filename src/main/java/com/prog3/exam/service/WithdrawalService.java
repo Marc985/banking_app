@@ -1,51 +1,71 @@
 package com.prog3.exam.service;
 
 import com.prog3.exam.entity.Account;
+import com.prog3.exam.entity.Loan;
 import com.prog3.exam.entity.Sold;
-import com.prog3.exam.repository.AccountCrudOperation;
-import com.prog3.exam.repository.SoldCrudOperation;
+import com.prog3.exam.repository.AccountRepository;
+import com.prog3.exam.repository.LoanRepository;
+import com.prog3.exam.repository.SoldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.sql.Date;
 
 @Service
 public class WithdrawalService {
     @Autowired
-    AccountCrudOperation accountCrudOperation;
+    AccountRepository accountRepository;
     @Autowired
-    SoldCrudOperation soldCrudOperation;
+    SoldRepository soldRepository;
+    @Autowired
+    LoanRepository loanRepository;
+
+
     public String makeWithdrawal(long idAccount, double amount, Date date){
-        Account account=accountCrudOperation.findAccountById(idAccount);
-        Sold sold=soldCrudOperation.findLastSoldByIdAccount(idAccount);
-        double actualSold=sold.getBalance();
-        double allowedCredit=account.getMonthlyNetIncome()/3;
-     if(account.getIsEligible()){
-         if((allowedCredit+actualSold)>=amount){
-             Sold newSold=new Sold();
-             newSold.setIdSold(30);
+        Account account = accountRepository.findAccountById(idAccount);
+        if (!account.getIsEligible()) {
+            return "This account is not eligible to make withdrawal";
+        }
 
-             newSold.setLoansinterest(1);
-             newSold.setDate(date);
-             newSold.setAccountId(idAccount);
-             if(actualSold>=amount){
-                 newSold.setBalance(actualSold-amount);
-                 newSold.setLoans(0);
-             }
+        Loan lastLoan = loanRepository.getLastLoan(idAccount);
+        if (lastLoan.getValue() != 0) {
+            return "You should pay back your last loan";
+        }
 
-             else{
-                 newSold.setLoans(actualSold-amount);
-                 newSold.setBalance(0);
-             }
-             soldCrudOperation.save(newSold);
-             return "success";
-         }
-         else
-             return "the allowed credit + your actual sold don't cover the withdrawal";
+        Sold sold = soldRepository.findLastSoldByIdAccount(idAccount);
+        double actualSold = sold.getBalance();
+        double allowedCredit = account.getMonthlyNetIncome() / 3;
+        if ((allowedCredit + actualSold) < amount) {
+            return "The allowed credit + your actual sold don't cover the withdrawal";
+        }
+
+    processWithDrawal(idAccount,actualSold,amount,date);
+        return "success";
+    }
+    public void processWithDrawal(long idAccount,double actualSold,double amount,Date date){
+        if(actualSold>=amount){
+         updateSold(date,idAccount,(actualSold-amount));
+        }
+        else{
+            newLoan(date,idAccount,(amount-actualSold));
+        }
+    }
+
+     private void updateSold(Date date,long idAccount,double value){
+         Sold newSold=new Sold();
+
+         newSold.setDate(date);
+         newSold.setAccountId(idAccount);
+         newSold.setBalance(value);
+         soldRepository.save(newSold);
      }
-     return  "this account is not eligible to make withdrawal";
+
+     private void newLoan(Date date,long idAccount,double value){
+         Loan loan=new Loan();
+         loan.setLoan_date(date);
+         loan.setValue(value);
+         loan.setIdAccount(idAccount);
+         loanRepository.save(loan);
+
      }
 }

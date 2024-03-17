@@ -6,12 +6,13 @@ import org.springframework.stereotype.Repository;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class SoldCrudOperation extends Request<Sold>{
+public class SoldRepository extends Request<Sold>{
 
-    public SoldCrudOperation(Connection connection) {
+    public SoldRepository(Connection connection) {
         super(connection);
     }
 
@@ -19,9 +20,25 @@ public class SoldCrudOperation extends Request<Sold>{
     public String getTableName() {
         return "sold";
     }
-    @Override
-    public List<Sold>  findAll(){
-        return super.findAll();
+    public List<Sold>  findSoldsByIdAccount(long idAccount){
+        String sql="select * from sold where account_id="+idAccount;
+        List<Sold> solds=new ArrayList<>();
+        try {
+            PreparedStatement preparedStatement=connection.prepareStatement(sql);
+            ResultSet resultSet=preparedStatement.executeQuery();
+            while (resultSet.next()){
+                solds.add(
+                        new Sold(
+                                resultSet.getDouble("balance"),
+                                resultSet.getDate("date"),
+                                resultSet.getLong("account_id")
+                )
+                );
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return  solds;
     }
     @Override
     public Sold save(Sold toSave){
@@ -36,10 +53,7 @@ public class SoldCrudOperation extends Request<Sold>{
             ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
                sold= new Sold(
-                        resultSet.getInt("id_sold"),
                         resultSet.getDouble("balance"),
-                        resultSet.getDouble("loans"),
-                        resultSet.getInt("loansinterest"),
                         resultSet.getDate("date"),
                        resultSet.getLong("account_id")
                 );

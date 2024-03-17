@@ -10,10 +10,8 @@ CREATE  TABLE IF NOT EXISTS  account(
 );
 
 CREATE TABLE IF NOT EXISTS sold(
-    id_sold int primary key,
+    id_sold serial primary key,
     balance double precision,
-    loans double precision,
-    loansInterest float,
     "date" date,
     account_id bigint  REFERENCES account(account_number)
 
@@ -44,3 +42,34 @@ CREATE TABLE  IF NOT EXISTS transfert(
     recipient_account bigint  REFERENCES account(account_number)
 );
 
+CREATE TABLE IF NOT EXISTS interest_rate(
+     id_interest_rate serial primary key,
+    first_7days float,
+     after_7days float
+);
+
+CREATE TABLE IF NOT EXISTS loans(
+ id_loans serial primary key,
+ "value" double precision,
+  loan_date date,
+  id_account biginteger references account(account_number)
+)
+
+
+
+CREATE or REPLACE FUNCTION get_sold_and_loan(account_id integer)
+RETURNS TABLE (
+sold_balance double precision,
+loan_date,
+loan_value double precision) as $$
+BEGIN
+RETURN QUERY
+SELECT s.balance as sold_balance,l.value as loan_value
+from sold as s
+INNER JOIN
+account on account.account_number=s.account_id
+INNER JOIN
+loans as l on l.id_account=account.account_number
+WHERE account.account_number=get_sold_and_loan.account_id
+ORDER BY s.date desc,l.loan_date desc limit 1 ;
+END; $$ LANGUAGE plpgsql;

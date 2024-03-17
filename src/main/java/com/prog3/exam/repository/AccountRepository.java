@@ -1,43 +1,47 @@
 package com.prog3.exam.repository;
 
-import com.prog3.exam.ConnectionDB;
 import com.prog3.exam.entity.Account;
+import com.prog3.exam.entity.Loan;
 import com.prog3.exam.entity.Sold;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.StyledEditorKit;
-import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 @Repository
-public class AccountCrudOperation extends Request<Account> {
+public class AccountRepository extends Request<Account> {
     @Autowired
     Connection connection;
 
-    public AccountCrudOperation(Connection connection) {
+    public AccountRepository(Connection connection) {
         super(connection);
     }
     @Autowired
-    SoldCrudOperation soldCrudOperation;
+    SoldRepository soldRepository;
+    @Autowired
+    LoanRepository loanRepository;
     @Override
     public Account save(Account entity) {
         Account account= super.save(entity);
         if(account !=null){
             LocalDate date=LocalDate.now();
             Sold initalSold=new Sold();
-            initalSold.setIdSold(9);
             initalSold.setAccountId(account.getAccountNumber());
-            initalSold.setLoans(0);
-            initalSold.setLoansinterest(2);
+            initalSold.setBalance(0);
             initalSold.setDate(java.sql.Date.valueOf(date));
-            soldCrudOperation.save(initalSold);
+            soldRepository.save(initalSold);
+
+            Loan initialLoan=new Loan();
+            initialLoan.setIdAccount(account.getAccountNumber());
+            initialLoan.setLoan_date(java.sql.Date.valueOf(date));
+            initialLoan.setValue(0);
+            loanRepository.save(initialLoan);
+
         }
         return account;
     }
