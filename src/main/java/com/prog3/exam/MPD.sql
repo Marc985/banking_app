@@ -20,12 +20,12 @@ CREATE TABLE IF NOT EXISTS sold(
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE  TABLE  IF NOT EXISTS  "transaction"(
-    reference UUID DEFAULT uuid_generate_v4() primary key ,
+    reference varchar(30)  primary key ,
     "type" varchar(20) check (type='debit' or type='credit'),
     amount double precision,
     "date" date,
-    reason varchar(20)
-
+    reason varchar(20),
+    account_number bigint references account(account_number)
 
 );
 

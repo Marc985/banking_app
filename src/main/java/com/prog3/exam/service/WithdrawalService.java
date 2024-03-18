@@ -3,9 +3,11 @@ package com.prog3.exam.service;
 import com.prog3.exam.entity.Account;
 import com.prog3.exam.entity.Loan;
 import com.prog3.exam.entity.Sold;
+import com.prog3.exam.entity.Transaction;
 import com.prog3.exam.repository.AccountRepository;
 import com.prog3.exam.repository.LoanRepository;
 import com.prog3.exam.repository.SoldRepository;
+import com.prog3.exam.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +21,8 @@ public class WithdrawalService {
     SoldRepository soldRepository;
     @Autowired
     LoanRepository loanRepository;
-
+    @Autowired
+    TransactionRepository transactionRepository;
 
     public String makeWithdrawal(long idAccount, double amount, Date date){
         Account account = accountRepository.findAccountById(idAccount);
@@ -27,13 +30,16 @@ public class WithdrawalService {
             return "This account is not eligible to make withdrawal";
         }
 
-        Loan lastLoan = loanRepository.getLastLoan(idAccount);
-        if (lastLoan.getValue() != 0) {
+       // Loan lastLoan = loanRepository.getLastLoan(idAccount);
+        Sold sold = soldRepository.findLastSoldByIdAccount(idAccount);
+        double actualSold = sold.getBalance();
+
+        if (actualSold<0) {
             return "You should pay back your last loan";
         }
 
-        Sold sold = soldRepository.findLastSoldByIdAccount(idAccount);
-        double actualSold = sold.getBalance();
+
+
         double allowedCredit = account.getMonthlyNetIncome() / 3;
         if ((allowedCredit + actualSold) < amount) {
             return "The allowed credit + your actual sold don't cover the withdrawal";
@@ -42,13 +48,10 @@ public class WithdrawalService {
     processWithDrawal(idAccount,actualSold,amount,date);
         return "success";
     }
-    public void processWithDrawal(long idAccount,double actualSold,double amount,Date date){
-        if(actualSold>=amount){
-         updateSold(date,idAccount,(actualSold-amount));
-        }
-        else{
-            newLoan(date,idAccount,(amount-actualSold));
-        }
+    private void processWithDrawal(long idAccount,double actualSold,double amount,Date date){
+
+      updateSold(date,idAccount,(actualSold-amount));
+      addTransaction(amount,"retrait",date,idAccount);
     }
 
      private void updateSold(Date date,long idAccount,double value){
@@ -58,14 +61,26 @@ public class WithdrawalService {
          newSold.setAccountId(idAccount);
          newSold.setBalance(value);
          soldRepository.save(newSold);
-     }
 
-     private void newLoan(Date date,long idAccount,double value){
+
+
+     }
+    private void addTransaction(double amount,String reason,Date date,long accountNumber){
+        Transaction newTransaction=new Transaction();
+        newTransaction.setType("debit");
+        newTransaction.setAmount(amount);
+        newTransaction.setReason(reason);
+        newTransaction.setDate(date);
+        newTransaction.setAccountNumber(accountNumber);
+        transactionRepository.saveTransaction(newTransaction);
+    }
+     /*private void newLoan(Date date,long idAccount,double value){
          Loan loan=new Loan();
          loan.setLoan_date(date);
          loan.setValue(value);
          loan.setIdAccount(idAccount);
          loanRepository.save(loan);
 
-     }
+
+     }*/
 }

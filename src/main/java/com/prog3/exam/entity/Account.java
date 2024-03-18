@@ -1,6 +1,7 @@
 package com.prog3.exam.entity;
 
 import lombok.*;
+import org.springframework.boot.context.properties.bind.DefaultValue;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;

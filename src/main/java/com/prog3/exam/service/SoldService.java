@@ -1,23 +1,18 @@
 package com.prog3.exam.service;
 
 import com.prog3.exam.entity.InterestRate;
-import com.prog3.exam.entity.Loan;
 import com.prog3.exam.entity.Sold;
 import com.prog3.exam.entity.SoldWithLoan;
 import com.prog3.exam.repository.InterestRateRepository;
 import com.prog3.exam.repository.LoanRepository;
 import com.prog3.exam.repository.SoldRepository;
-import com.prog3.exam.repository.SoldWithLoanRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class SoldService {
@@ -28,8 +23,7 @@ public class SoldService {
 
     @Autowired
     InterestRateRepository interestRateRepository;
-    @Autowired
-    SoldWithLoanRepository soldWithLoanRepository;
+
 
     public Sold getSoldByDate(long idAccount, Date date){
         List<Sold> solds= soldRepository.findAll();
@@ -45,20 +39,31 @@ public class SoldService {
     }
 
 public SoldWithLoan getCurrentSolds(long accountNumber){
+        Sold lastSold=soldRepository.findLastSoldByIdAccount(accountNumber);
 
-        SoldWithLoan soldWithLoan=soldWithLoanRepository.getActualSoldAndLoan(accountNumber);
-        Loan loan =loanRepository.getLastLoan(accountNumber);
-        LocalDate loanDate= loan.getLoan_date().toLocalDate();
+
+
+        LocalDate loanDate=lastSold.getDate().toLocalDate();
         InterestRate interestRate=interestRateRepository.getInterestRate();
         float interestPercentage=0;
-        double loanValue= soldWithLoan.getLoan();
+        double soldValue=lastSold.getBalance();
 
         LocalDate currentDate= LocalDate.now();
-       long retardationDay=ChronoUnit.DAYS.between(loanDate,currentDate);
-    if(loanValue>0){
+       long retardationDay=Math.abs(ChronoUnit.DAYS.between(loanDate,currentDate));
+
+    SoldWithLoan soldWithLoan=new SoldWithLoan();
+    if(soldValue<0){
+        double loanValue=Math.abs(soldValue);
        double loanInterest= calculateLoanInterest(loanValue,interestRate,retardationDay);
+        soldWithLoan.setSold(0);
         soldWithLoan.setLoanInterest(loanInterest);
+        soldWithLoan.setLoan(loanValue);
         }
+    else{
+        soldWithLoan.setSold(soldValue);
+        soldWithLoan.setLoan(0);
+        soldWithLoan.setLoanInterest(0);
+    }
         return soldWithLoan;
 }
 
