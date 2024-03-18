@@ -1,11 +1,9 @@
 package com.prog3.exam.service;
 
 import com.prog3.exam.entity.Account;
-import com.prog3.exam.entity.Loan;
 import com.prog3.exam.entity.Sold;
 import com.prog3.exam.entity.Transaction;
 import com.prog3.exam.repository.AccountRepository;
-import com.prog3.exam.repository.LoanRepository;
 import com.prog3.exam.repository.SoldRepository;
 import com.prog3.exam.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +17,7 @@ public class WithdrawalService {
     AccountRepository accountRepository;
     @Autowired
     SoldRepository soldRepository;
-    @Autowired
-    LoanRepository loanRepository;
+
     @Autowired
     TransactionRepository transactionRepository;
 
@@ -74,13 +71,5 @@ public class WithdrawalService {
         newTransaction.setAccountNumber(accountNumber);
         transactionRepository.saveTransaction(newTransaction);
     }
-     /*private void newLoan(Date date,long idAccount,double value){
-         Loan loan=new Loan();
-         loan.setLoan_date(date);
-         loan.setValue(value);
-         loan.setIdAccount(idAccount);
-         loanRepository.save(loan);
 
-
-     }*/
 }

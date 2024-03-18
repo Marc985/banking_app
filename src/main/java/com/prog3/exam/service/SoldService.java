@@ -4,7 +4,6 @@ import com.prog3.exam.entity.InterestRate;
 import com.prog3.exam.entity.Sold;
 import com.prog3.exam.entity.SoldWithLoan;
 import com.prog3.exam.repository.InterestRateRepository;
-import com.prog3.exam.repository.LoanRepository;
 import com.prog3.exam.repository.SoldRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,8 +17,7 @@ import java.util.List;
 public class SoldService {
     @Autowired
     SoldRepository soldRepository;
-    @Autowired
-    LoanRepository loanRepository;
+
 
     @Autowired
     InterestRateRepository interestRateRepository;

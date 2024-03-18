@@ -3,7 +3,6 @@ package com.prog3.exam.controller;
 import com.prog3.exam.entity.Loan;
 import com.prog3.exam.entity.Sold;
 import com.prog3.exam.entity.SoldWithLoan;
-import com.prog3.exam.repository.LoanRepository;
 import com.prog3.exam.repository.SoldRepository;
 import com.prog3.exam.service.SoldService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,10 +35,6 @@ public class SoldController {
       public SoldWithLoan getSolds(@PathVariable long idAccount){
         return soldService.getCurrentSolds(idAccount);
     }
-    @Autowired
-    LoanRepository loanRepository;
-    @GetMapping("/loan/{idAccount}")
-    public Loan getLoan(@PathVariable long idAccount){
-        return loanRepository.getLastLoan(idAccount);
-    }
+
+
 }

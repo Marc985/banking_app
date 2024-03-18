@@ -23,8 +23,7 @@ public class AccountRepository extends Request<Account> {
     }
     @Autowired
     SoldRepository soldRepository;
-    @Autowired
-    LoanRepository loanRepository;
+
     @Override
     public Account save(Account entity) {
         Account account= super.save(entity);
@@ -36,11 +35,7 @@ public class AccountRepository extends Request<Account> {
             initalSold.setDate(java.sql.Date.valueOf(date));
             soldRepository.save(initalSold);
 
-            Loan initialLoan=new Loan();
-            initialLoan.setIdAccount(account.getAccountNumber());
-            initialLoan.setLoan_date(java.sql.Date.valueOf(date));
-            initialLoan.setValue(0);
-            loanRepository.save(initialLoan);
+
 
         }
         return account;
