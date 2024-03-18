@@ -9,15 +9,16 @@ import java.sql.SQLException;
 
 @Configuration
 public class ConnectionDB {
-    private String username="postgres";
+    private String username=System.getenv("USERNAME");
 
-    private String password="postgres";
+    private String password=System.getenv("PASSWORD");
+    private String url=System.getenv("URL");
     @Bean
     public  Connection getConnection() throws SQLException {
 
 
         return  DriverManager.getConnection(
-                "jdbc:postgresql://localhost:5432/digital_bank",
+                url,
                 username,
                 password
         );
