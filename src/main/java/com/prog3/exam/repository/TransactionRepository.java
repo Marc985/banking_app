@@ -21,8 +21,8 @@ public Transaction saveTransaction(Transaction transaction){
         preparedStatement.setString(1,transactionReference);
         preparedStatement.setString(2,transaction.getType());
         preparedStatement.setDouble(3,transaction.getAmount());
-        preparedStatement.setString(4,transaction.getReason());
-        preparedStatement.setDate(5,transaction.getDate());
+        preparedStatement.setDate(4,transaction.getDate());
+        preparedStatement.setString(5,transaction.getReason());
         preparedStatement.setLong(6,transaction.getAccountNumber());
         int response=preparedStatement.executeUpdate();
     }catch (Exception e){

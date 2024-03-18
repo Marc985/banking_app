@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS sold(
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
 CREATE  TABLE  IF NOT EXISTS  "transaction"(
-    reference varchar(30)  primary key ,
+    reference varchar(100)  primary key ,
     "type" varchar(20) check (type='debit' or type='credit'),
     amount double precision,
     "date" date,
@@ -48,28 +48,35 @@ CREATE TABLE IF NOT EXISTS interest_rate(
      after_7days float
 );
 
-CREATE TABLE IF NOT EXISTS loans(
- id_loans serial primary key,
- "value" double precision,
-  loan_date date,
-  id_account biginteger references account(account_number)
-)
 
 
-
-CREATE or REPLACE FUNCTION get_sold_and_loan(account_id integer)
+CREATE OR REPLACE FUNCTION account_statement(account_number INT)
 RETURNS TABLE (
-sold_balance double precision,
-loan_date,
-loan_value double precision) as $$
+    reference varchar(100),
+    type varchar(20),
+    amount double precision,
+    transaction_date DATE,
+    reason varchar(20),
+    balance double precision
+) AS $$
 BEGIN
 RETURN QUERY
-SELECT s.balance as sold_balance,l.value as loan_value
-from sold as s
-INNER JOIN
-account on account.account_number=s.account_id
-INNER JOIN
-loans as l on l.id_account=account.account_number
-WHERE account.account_number=get_sold_and_loan.account_id
-ORDER BY s.date desc,l.loan_date desc limit 1 ;
-END; $$ LANGUAGE plpgsql;
+SELECT
+    transaction.reference,
+    transaction.type,
+    transaction.amount,
+    transaction.date,
+    transaction.reason,
+    sold.balance
+FROM
+    transaction
+        INNER JOIN
+    account ON account.account_number = transaction.account_number
+        INNER JOIN
+    sold ON sold.account_id = transaction.account_number
+WHERE
+    transaction.date = sold.date AND
+    account.account_number = account_statement.account_number;
+END; $$
+LANGUAGE plpgsql;
+
