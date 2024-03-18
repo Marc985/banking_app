@@ -15,8 +15,7 @@ public class AccountService {
    public String createAccount(Account account){
        LocalDate date=LocalDate.now();
        LocalDate birthdate= account.getBirthdate().toLocalDate();
-       long age= Math.abs(ChronoUnit.DAYS.between(date,birthdate));
-
+       long age= Math.abs(ChronoUnit.YEARS.between(birthdate,date));
        if(age>=21){
            accountRepository.save(account);
            return "your account is successfully created";
