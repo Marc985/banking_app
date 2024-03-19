@@ -1,7 +1,6 @@
 package com.prog3.exam.repository;
 
 import com.prog3.exam.entity.Account;
-import com.prog3.exam.entity.Loan;
 import com.prog3.exam.entity.Sold;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
