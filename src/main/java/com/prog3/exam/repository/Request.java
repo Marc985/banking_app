@@ -17,6 +17,7 @@ public abstract class Request<T> implements  CrudOperation<T> {
     public List<T> findAll() {
         String tableName=getTableName();
         String sql="select * from "+tableName;
+        List<String> columns=new ArrayList<>();
         List<T> results=new ArrayList<>();
         try {
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
@@ -30,7 +31,6 @@ public abstract class Request<T> implements  CrudOperation<T> {
         }
         return results;
     }
-
 
     public T save(T entity) {
         try {

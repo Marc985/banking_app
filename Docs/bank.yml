@@ -6,7 +6,7 @@ servers:
   - url: http://localhost:8080
     description: Local server
 paths:
- /account:
+ /accounts:
     get:
       summary: Get all accounts
       responses:
@@ -18,6 +18,8 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/Account'
+  
+ /account: 
     post:
       summary: Create a new account
       requestBody:
@@ -49,7 +51,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountResponse'
+                $ref: '#/components/schemas/AccountUpdate'
  /account/{id}/withdrawals:
     post:
       summary: Perform a withdrawal
@@ -218,28 +220,29 @@ components:
     AccountCreate:
       type: object
       properties:
-        name:
+        accountNumber:
+          type: number
+        clientName:
           type: string
-        firstName:
+        clientLastName:
           type: string
-        dateOfBirth:
+        birthdate:
           type: string
           format: date
         monthlyNetIncome:
           type: number
-        accountNumber:
-          type: string
+       
     AccountUpdate:
       type: object
       properties:
-        name:
+        clientName:
           type: string
-        firstName:
+        clientLastName:
           type: string
-        dateOfBirth:
+        birthDate:
           type: string
           format: date
-        monthlyNetIncome:
+        monthLyNetIncome:
           type: number
     AccountResponse:
       type: object
