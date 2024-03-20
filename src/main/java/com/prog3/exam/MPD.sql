@@ -48,7 +48,7 @@ CREATE TABLE  IF NOT EXISTS transfert(
 
 );
 
---CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
 CREATE TABLE IF NOT EXISTS interest_rate(
@@ -85,8 +85,8 @@ ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
     FROM
     "transaction" t
     WHERE
-    t."date" BETWEEN '2024-03-12' AND '2024-03-20' -- Replace '2024-03-20' and 'end_date' with your specific date range
-    AND t.account_number = 1004 -- Replace 1004 with the specific account number
+    t."date" BETWEEN begin_date AND end_date
+    AND t.account_number = account_statement.account_number
     ORDER BY
     t."date" DESC;
 END; $$
