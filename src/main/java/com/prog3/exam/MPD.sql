@@ -42,6 +42,9 @@ CREATE TABLE  IF NOT EXISTS transfert(
     recipient_account bigint  REFERENCES account(account_number)
 );
 
+--CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+
 CREATE TABLE IF NOT EXISTS interest_rate(
      id_interest_rate serial primary key,
     first_7days float,
