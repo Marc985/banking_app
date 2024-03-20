@@ -19,13 +19,19 @@ CREATE TABLE IF NOT EXISTS sold(
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
+CREATE  TABLE IF NOT EXISTS category(
+    id_category serial primary key,
+    category_name varchar(100) check category_name IN( CHECK (category_type IN ('nourriture et boisson', 'achat et boutique en ligne', 'logement', 'transports', 'vehicule', 'loisirs', 'multimedia Info')
+)
+
 CREATE  TABLE  IF NOT EXISTS  "transaction"(
     reference varchar(100)  primary key ,
     "type" varchar(20) check (type='debit' or type='credit'),
     amount double precision,
     "date" date,
     reason varchar(20),
-    account_number bigint references account(account_number)
+    account_number bigint references account(account_number),
+    int id_category REFERENCES category(id_category)
 
 );
 
@@ -50,7 +56,7 @@ CREATE TABLE IF NOT EXISTS interest_rate(
 
 
 
-CREATE OR REPLACE FUNCTION account_statement(account_number INT)
+CREATE OR REPLACE FUNCTION account_statement(account_number INT,Date begin_date,Date end_date)
 RETURNS TABLE (
     reference varchar(100),
     type varchar(20),
@@ -61,22 +67,25 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
 RETURN QUERY
-SELECT
-    transaction.reference,
-    transaction.type,
-    transaction.amount,
-    transaction.date,
-    transaction.reason,
-    sold.balance
-FROM
-    transaction
-        INNER JOIN
-    account ON account.account_number = transaction.account_number
-        INNER JOIN
-    sold ON sold.account_id = transaction.account_number
-WHERE
-    transaction.date = sold.date AND
-    account.account_number = account_statement.account_number;
+    SELECT
+    t.reference,
+    t."type",
+    t.amount,
+    t."date",
+    t.reason,
+ SUM(CASE WHEN t."type" = 'credit' THEN t.amount ELSE -t.amount END) OVER
+(
+PARTITION BY t.account_number
+ORDER BY t."date"
+ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+) AS balance
+    FROM
+    "transaction" t
+    WHERE
+    t."date" BETWEEN '2024-03-12' AND '2024-03-20' -- Replace '2024-03-20' and 'end_date' with your specific date range
+    AND t.account_number = 1004 -- Replace 1004 with the specific account number
+    ORDER BY
+    t."date" DESC;
 END; $$
 LANGUAGE plpgsql;
 

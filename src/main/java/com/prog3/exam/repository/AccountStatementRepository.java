@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -14,18 +15,19 @@ import java.util.List;
 public class AccountStatementRepository {
     @Autowired
     Connection connection;
-    public List<AccountStatement> getAccountStatement(long accountNumber){
-        String sql="select * from account_statement("+accountNumber+")";
+    public List<AccountStatement> getAccountStatement(long accountNumber, Date startDate,Date endDate){
+        String sql="select * from account_statement("+accountNumber+",'"+startDate+"','"+endDate+"')";
         List<AccountStatement> accountStatements=new ArrayList<>();
         try{
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
+
             ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
                 AccountStatement newAcocuntStatement=new AccountStatement();
                 newAcocuntStatement.setReference(resultSet.getString("reference"));
                 newAcocuntStatement.setDate(resultSet.getDate("transaction_date"));
                 newAcocuntStatement.setSold(resultSet.getDouble("balance"));
-                newAcocuntStatement.setReason("reason");
+                newAcocuntStatement.setReason(resultSet.getString("reason"));
 
                 String type= resultSet.getString("type");
                 if(type.equals("debit")){

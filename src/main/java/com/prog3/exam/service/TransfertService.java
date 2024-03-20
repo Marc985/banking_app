@@ -1,5 +1,6 @@
 package com.prog3.exam.service;
 
+import com.prog3.exam.entity.MultipleTransfert;
 import com.prog3.exam.entity.Sold;
 import com.prog3.exam.entity.Transaction;
 import com.prog3.exam.entity.Transfert;
@@ -87,6 +88,25 @@ public class TransfertService {
 
      }
      return  reference;
+ }
+
+ public String multipleTransfert(MultipleTransfert multipleTransfert){
+   Sold senderSold= soldRepository.findLastSoldByIdAccount(multipleTransfert.getSenderAccount());
+   double totalAmount=multipleTransfert.getAmount()*multipleTransfert.getReceivers().size();
+   if(senderSold.getBalance()<(totalAmount))
+       return "cannot process the transfert because your sold is insufficient";
+   updateSold(multipleTransfert.getSenderAccount(),senderSold.getBalance()-totalAmount,multipleTransfert.getRegisterDate());
+   addTransaction(multipleTransfert.getSenderAccount(),multipleTransfert.getRegisterDate(),multipleTransfert.getReason(),"debit",totalAmount);
+
+   String reference="VIR_"+LocalDateTime.now();
+   addTransfertHistory(reference,totalAmount,multipleTransfert.getReason(),multipleTransfert.getSenderAccount(),multipleTransfert.getRegisterDate(),multipleTransfert.getRegisterDate(),"success");
+        for(long recipientAccount:multipleTransfert.getReceivers()){
+            Sold recipientSold=soldRepository.findLastSoldByIdAccount(recipientAccount);
+
+            updateSold(recipientAccount,recipientSold.getBalance()+multipleTransfert.getAmount(),multipleTransfert.getRegisterDate());
+            addTransaction(recipientAccount,multipleTransfert.getRegisterDate(),multipleTransfert.getReason(),"credit",multipleTransfert.getAmount());
+        }
+        return "transfert successfully processed";
  }
     @Scheduled(cron = "0 * * * * *")
  private  void processExternalTransfert(){
