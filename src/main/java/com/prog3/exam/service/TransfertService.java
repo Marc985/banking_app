@@ -42,68 +42,60 @@ public class TransfertService {
         newTransfert.setStatus("pending");
 
 
-       // newTransfert.set
-       // transfertRepository.saveTransfert()
-        //if(currentDate.isAfter(effective) || currentDate.isEqual(effective)){
+
             double newSoldValue=receveirSold.getBalance()+amount;
             updateSold(recipientAccount,newSoldValue,effectiveDate);
 
             addTransaction(recipientAccount,effectiveDate,reason,"credit",amount);
 
-        //}
 
 
    return transfertRepository.saveTransfert(newTransfert);
     }
-double senderBalance=0;
-    public String transfertMoney(double amount, long senderAccountNumber, long recipientAccountNumber
- , Date effectiveDate,Date registrationDate,String reason,String status,boolean isSameBank
-                              ){
 
-     Sold senderSold=soldRepository.findLastSoldByIdAccount(senderAccountNumber);
-     Sold recipientSold=soldRepository.findLastSoldByIdAccount(recipientAccountNumber);
-        senderBalance = senderSold.getBalance();
-     if(senderSold.getBalance()<amount)
+    public String transfertMoney(Transfert transfert){
+
+     Sold senderSold=soldRepository.findLastSoldByIdAccount(transfert.getSenderAccount());
+     Sold recipientSold=soldRepository.findLastSoldByIdAccount(transfert.getRecipientAccount());
+     if(senderSold.getBalance()<transfert.getAmount())
          return "insufficient sold";
-     if(isSameBank){
-         effectiveDate=registrationDate;
 
-        updateSold(senderAccountNumber,(senderSold.getBalance()-amount),effectiveDate);
+     String reference="VIR_"+ LocalDateTime.now();
 
-        updateSold(recipientAccountNumber,(recipientSold.getBalance()+amount),effectiveDate);
+        if(transfert.getIsSameBank()){
 
-         addTransaction(senderAccountNumber,effectiveDate,reason,"debit",amount);
 
-         addTransaction(recipientAccountNumber,effectiveDate,reason,"credit",amount);
+        updateSold(transfert.getSenderAccount(),(senderSold.getBalance()-transfert.getAmount()),transfert.getEffectiveDate());
 
+        updateSold(transfert.getRecipientAccount(),(recipientSold.getBalance()+transfert.getAmount()),transfert.getEffectiveDate());
+
+         addTransaction(transfert.getSenderAccount(),transfert.getEffectiveDate(),transfert.getReason(),"debit",transfert.getAmount());
+
+         addTransaction(transfert.getRecipientAccount(),transfert.getEffectiveDate(),transfert.getReason(),"credit",transfert.getAmount());
+
+         addTransfertHistory(reference,transfert.getAmount(),transfert.getReason(),transfert.getSenderAccount(),transfert.getRegistrationDate(),transfert.getEffectiveDate(),"success");
 
 
      }
      else {
 
-         String reference="VIR_"+ LocalDateTime.now();
-         Transfert newTransfert=new Transfert();
-         newTransfert.setReference(reference);
-         newTransfert.setAmount(amount);
-         newTransfert.setReason(reason);
-         newTransfert.setRecipientAccount(senderAccountNumber);
-         newTransfert.setRegistrationDate(registrationDate);
-         newTransfert.setEffectiveDate(effectiveDate);
-         newTransfert.setStatus("pending");
+
+        addTransfertHistory(reference,transfert.getAmount(),transfert.getReason(),transfert.getSenderAccount(),transfert.getRegistrationDate(),transfert.getEffectiveDate(),"pending");
 
 
-         transfertRepository.saveTransfert(newTransfert);
 
 
      }
-     return  null;
+     return  reference;
  }
     @Scheduled(cron = "0 * * * * *")
  private  void processExternalTransfert(){
      List<Transfert> externalTransfertToProcess=transfertRepository.findByEffectiveDate(Date.valueOf(LocalDate.now()));
+
      for(Transfert transfert:externalTransfertToProcess){
          if(transfert.getStatus().equals("pending")){
-             updateSold(transfert.getSenderAccount(),senderBalance-transfert.getAmount(),transfert.getEffectiveDate());
+            Sold sold= soldRepository.findLastSoldByIdAccount(transfert.getSenderAccount());
+             updateSold(transfert.getSenderAccount(),sold.getBalance()-transfert.getAmount(),transfert.getEffectiveDate());
              transfertRepository.updateStatus("success",transfert.getReference());
          }
      }
@@ -123,5 +115,23 @@ double senderBalance=0;
         newSold.setDate(date);
         newSold.setBalance(balance);
         soldRepository.save(newSold);
+ }
+ private void addTransfertHistory(String reference,double amount,String reason,
+                                  long senderAccountNumber,Date registrationDate,
+                                  Date effectiveDate,String status
+ ){
+     Transfert newTransfert=new Transfert();
+     newTransfert.setReference(reference);
+     newTransfert.setAmount(amount);
+     newTransfert.setReason(reason);
+     newTransfert.setRecipientAccount(senderAccountNumber);
+     newTransfert.setRegistrationDate(registrationDate);
+     newTransfert.setEffectiveDate(effectiveDate);
+     newTransfert.setStatus(status);
+     transfertRepository.saveTransfert(newTransfert);
+ }
+
+ public String cancelTransfert(String reference){
+      return   transfertRepository.updateStatus("canceled",reference);
  }
 }
