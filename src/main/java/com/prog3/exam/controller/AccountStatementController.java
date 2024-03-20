@@ -15,7 +15,7 @@ import java.util.List;
 public class AccountStatementController {
     @Autowired
     AccountStatementRepository accountStatementRepository;
-    @GetMapping("/test/{accountNumber}")
+    @GetMapping("/statement/{accountNumber}")
     public List<AccountStatement> getALl(@PathVariable long accountNumber, @RequestParam Date beginDate,@RequestParam Date endDate){
         return accountStatementRepository.getAccountStatement(accountNumber,beginDate,endDate);
     }
