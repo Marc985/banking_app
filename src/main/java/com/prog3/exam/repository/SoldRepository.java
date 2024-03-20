@@ -46,7 +46,7 @@ public class SoldRepository extends Request<Sold>{
     }
     public Sold findLastSoldByIdAccount(float idAccount){
         String sql="select * from sold where account_id="+idAccount+"" +
-                " order by date desc limit 1";
+                " order by id_sold desc limit 1";
         Sold sold=null;
         try {
             PreparedStatement preparedStatement=connection.prepareStatement(sql);

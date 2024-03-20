@@ -32,14 +32,14 @@ CREATE  TABLE  IF NOT EXISTS  "transaction"(
 
 
 CREATE TABLE  IF NOT EXISTS transfert(
-    reference UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    reference varchar(100) primary key,
     reason varchar(50),
     amount double precision,
     effective_date date,
     registration_date date,
     status varchar(30) check ( status='canceled' or status='pending' or status='success' ),
-    sender_account bigint  REFERENCES account(account_number),
-    recipient_account bigint  REFERENCES account(account_number)
+    account bigint  REFERENCES account(account_number)
+
 );
 
 --CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

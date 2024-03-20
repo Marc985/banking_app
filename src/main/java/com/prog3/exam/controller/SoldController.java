@@ -1,6 +1,5 @@
 package com.prog3.exam.controller;
 
-import com.prog3.exam.entity.Loan;
 import com.prog3.exam.entity.Sold;
 import com.prog3.exam.entity.SoldWithLoan;
 import com.prog3.exam.repository.SoldRepository;
@@ -36,5 +35,8 @@ public class SoldController {
         return soldService.getCurrentSolds(idAccount);
     }
 
-
+    @GetMapping("/last/{id}")
+    public Sold sold(@PathVariable long id){
+        return soldRepository.findLastSoldByIdAccount(id);
+    }
 }
