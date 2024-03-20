@@ -83,3 +83,51 @@ WHERE
 END; $$
 LANGUAGE plpgsql;
 
+
+
+
+
+__________ DUMMY DATA_____________
+
+
+INSERT INTO account (account_number, client_name, client_last_name, birthdate, monthly_net_income, is_eligible)
+VALUES
+(123456789, 'John', 'Doe', '1990-01-01', 5000.0, true),
+(987654321, 'Jane', 'Smith', '1995-05-15', 6000.0, false),
+(555555555, 'Alice', 'Johnson', '1988-11-30', 7000.0, true),
+(888888888, 'Bob', 'Williams', '1992-09-10', 5500.0, true);
+
+
+INSERT INTO sold (balance, "date", account_id)
+VALUES
+(1500.0, '2024-03-15', 123456789),
+(2500.0, '2024-03-16', 987654321),
+(1800.0, '2024-03-17', 555555555),
+(3000.0, '2024-03-18', 888888888);
+
+
+INSERT INTO "transaction" (reference, "type", amount, "date", reason, account_number)
+VALUES
+('REF123', 'debit', 500.0, '2024-03-15', 'Purchase', 123456789),
+('REF456', 'credit', 1000.0, '2024-03-16', 'Salary', 987654321),
+('REF789', 'debit', 200.0, '2024-03-17', 'Utility Bill', 555555555),
+('REFABC', 'credit', 1500.0, '2024-03-18', 'Refund', 888888888);
+
+
+
+INSERT INTO transfert (reason, amount, effective_date, registration_date, status, sender_account, recipient_account)
+VALUES
+('Payment', 200.0, '2024-03-20', '2024-03-20', 'success', 123456789, 987654321),
+('Transfer', 500.0, '2024-03-19', '2024-03-19', 'pending', 987654321, 123456789),
+('Refund', 100.0, '2024-03-18', '2024-03-18', 'success', 555555555, 888888888),
+('Payment', 300.0, '2024-03-17', '2024-03-17', 'canceled', 888888888, 555555555);
+
+
+
+INSERT INTO interest_rate (first_7days, after_7days)
+VALUES
+(0.05, 0.07),
+(0.03, 0.05),
+(0.04, 0.06);
+
+
