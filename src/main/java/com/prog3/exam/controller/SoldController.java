@@ -11,6 +11,7 @@ import java.sql.Date;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 public class SoldController {
     @Autowired
     SoldRepository soldRepository;
@@ -19,11 +20,7 @@ public class SoldController {
     public void addSold(Sold sold){
         soldRepository.save(sold);
     }
-    @GetMapping("/solds/{accountNumber}")
-    public List<Sold> solds(@PathVariable long accountNumber){
 
-        return  soldRepository.findSoldsByIdAccount(accountNumber);
-    }
 
     @GetMapping("/sold/{idAccount}")
     public Sold soldByDate(@PathVariable long idAccount, @RequestParam("date") Date date){

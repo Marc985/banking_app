@@ -29,7 +29,7 @@ public InterestRate getInterestRate(){
 }
 
 public String updateInterestRate(float first7days,float after7days){
-    String sql="update interet_rate set first_7days=?,after_7days=?";
+    String sql="update interest_rate set first_7days=?,after_7days=?";
     String response="error while updating interest rate";
     try {
         PreparedStatement preparedStatement=connection.prepareStatement(sql);

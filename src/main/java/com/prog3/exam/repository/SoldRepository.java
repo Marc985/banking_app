@@ -4,6 +4,7 @@ import com.prog3.exam.entity.Sold;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -20,25 +21,27 @@ public class SoldRepository extends Request<Sold>{
     public String getTableName() {
         return "sold";
     }
-    public List<Sold>  findSoldsByIdAccount(long idAccount){
-        String sql="select * from sold where account_id="+idAccount;
-        List<Sold> solds=new ArrayList<>();
+    public Sold findSoldByDate(long idAccount, Date date){
+        String sql="SELECT * FROM sold WHERE account_id=? AND date<? OR date=? ORDER BY id_sold DESC limit 1";
+
+        Sold sold=new Sold();
         try {
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
+            preparedStatement.setLong(1,idAccount);
+            preparedStatement.setDate(2,date);
+            preparedStatement.setDate(3,date);
             ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
-                solds.add(
-                        new Sold(
-                                resultSet.getDouble("balance"),
-                                resultSet.getDate("date"),
-                                resultSet.getLong("account_id")
-                )
-                );
+                sold.setBalance( resultSet.getDouble("balance"));
+                sold.setDate(resultSet.getDate("date"));
+                sold.setAccountId(resultSet.getLong("account_id"));
+
+
             }
         }catch (Exception e){
             e.printStackTrace();
         }
-        return  solds;
+        return  sold;
     }
     @Override
     public Sold save(Sold toSave){

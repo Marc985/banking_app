@@ -3,11 +3,13 @@ package com.prog3.exam.controller;
 import com.prog3.exam.entity.InterestRate;
 import com.prog3.exam.repository.InterestRateRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
+@CrossOrigin
 public class InterestRateController {
     @Autowired
     InterestRateRepository interestRateRepository;

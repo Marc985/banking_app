@@ -21,7 +21,7 @@ public class WithdrawalService {
     @Autowired
     TransactionRepository transactionRepository;
 
-    public String makeWithdrawal(long idAccount, double amount, Date date){
+    public String makeWithdrawal(long idAccount,String reason, double amount, Date date){
         Account account = accountRepository.findAccountById(idAccount);
         if (!account.getIsEligible()) {
             return "This account is not eligible to make withdrawal";
@@ -42,13 +42,13 @@ public class WithdrawalService {
             return "The allowed credit + your actual sold don't cover the withdrawal";
         }
 
-    processWithDrawal(idAccount,actualSold,amount,date);
+    processWithDrawal(idAccount,actualSold,amount,date,reason);
         return "success";
     }
-    private void processWithDrawal(long idAccount,double actualSold,double amount,Date date){
+    private void processWithDrawal(long idAccount,double actualSold,double amount,Date date,String reason){
 
       updateSold(date,idAccount,(actualSold-amount));
-      addTransaction(amount,"retrait",date,idAccount);
+      addTransaction(amount,reason,date,idAccount);
     }
 
      private void updateSold(Date date,long idAccount,double value){

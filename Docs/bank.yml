@@ -38,7 +38,7 @@ paths:
     put:
       summary: Update account information
       parameters:
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/idAccount'
       requestBody:
         required: true
         content:
@@ -47,7 +47,7 @@ paths:
               $ref: '#/components/schemas/AccountUpdate'
       responses:
         '200':
-          description: Account information updated successfully
+          description: Account information updated fff
           content:
             application/json:
               schema:
@@ -56,7 +56,7 @@ paths:
     post:
       summary: Perform a withdrawal
       parameters:
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/idAccount'
       requestBody:
         required: true
         content:
@@ -70,11 +70,45 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WithdrawalResponse'
- /account/{id}/balance:
+ /interestRate:
+  put:
+    summary: Update the interest rate of the loan
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              first7days:
+                type: number
+              after7days:
+                type: number
+      
+    responses:
+      '200':
+        description: Interest rate updated successfully
+        content:
+          application/json:
+            schema:
+              type: string
+ /soldAndLoan/{id}:
     get:
-      summary: Check account balance
+      summary: display account balance and loan permanently
       parameters:
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/idAccount'
+      responses:
+        '200':
+          description: Account balance and loan
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BalanceResponse'
+ /sold/{id}:
+    get:
+      summary: Check account balance on given date
+      parameters:
+        - $ref: '#/components/parameters/idAccount'
         - $ref: '#/components/parameters/DateQuery'
       responses:
         '200':
@@ -82,12 +116,13 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BalanceResponse'
+                $ref: '#/components/schemas/BalanceResponseByDate'
+
  /account/{id}/deposits:
     post:
       summary: Perform a deposit
       parameters:
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/idAccount'
       requestBody:
         required: true
         content:
@@ -105,7 +140,7 @@ paths:
     post:
       summary: Perform a transfer
       parameters:
-        - $ref: '#/components/parameters/AccountId'
+        - $ref: '#/components/parameters/idAccount'
       requestBody:
         required: true
         content:
@@ -168,7 +203,7 @@ paths:
                 $ref: '#/components/schemas/DashboardData'
 components:
  parameters:
-    AccountId:
+    idAccount:
       name: id
       in: path
       required: true
@@ -256,14 +291,13 @@ components:
       properties:
         amount:
           type: number
-        dateTime:
+        reason:
+          type: string 
+        date:
           type: string
-          format: date-time
+          format: date
     WithdrawalResponse:
-      type: object
-      properties:
-        message:
-          type: string
+      type: string
     BalanceResponse:
       type: object
       properties:
@@ -273,6 +307,16 @@ components:
           type: number
         loanInterest:
           type: number
+    BalanceResponseByDate:
+      type: object
+      properties:
+        balance: 
+          type: number
+        date:
+          type: string
+          format: date
+        accountId:
+          type: integer
     DepositRequest:
       type: object
       properties:

@@ -24,14 +24,9 @@ public class SoldService {
 
 
     public Sold getSoldByDate(long idAccount, Date date){
-        List<Sold> solds= soldRepository.findAll();
-        Sold soldByDate=null;
-        for(Sold sold:solds){
-            if((sold.getDate().before(date)) || sold.getDate().equals(date) && (soldByDate==null || sold.getDate().after(soldByDate.getDate())))
-            soldByDate=sold;
-        }
 
-            return soldByDate;
+
+        return soldRepository.findSoldByDate(idAccount,date);
 
 
     }

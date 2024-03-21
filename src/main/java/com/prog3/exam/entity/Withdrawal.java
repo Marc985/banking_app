@@ -12,5 +12,6 @@ import java.sql.Date;
 @Data
 public class Withdrawal implements Serializable {
     double amount;
+    String reason;
     Date date;
 }

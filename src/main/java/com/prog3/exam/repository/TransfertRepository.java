@@ -75,4 +75,26 @@ public List<Transfert> findByEffectiveDate(Date date){
     return transferts;
 }
 
+public  List<Transfert> findALlTransfertByAccount(long accounNumber){
+    String sql="select * from transfert where account=?";
+    List<Transfert> transferts=new ArrayList<>();
+    try {
+        PreparedStatement preparedStatement=connection.prepareStatement(sql);
+        preparedStatement.setLong(1,accounNumber);
+        ResultSet resultSet=preparedStatement.executeQuery();
+        while (resultSet.next()){
+            Transfert transfert=new Transfert();
+            transfert.setSenderAccount(resultSet.getLong("account"));
+            transfert.setStatus(resultSet.getString("status"));
+            transfert.setReference(resultSet.getString("reference"));
+            transfert.setRegistrationDate(resultSet.getDate("registration_date"));
+            transfert.setEffectiveDate(resultSet.getDate("effective_date"));
+            transferts.add(transfert);
+        }
+    }catch (Exception e){
+        e.printStackTrace();
+    }
+    return transferts;
+}
+
 }
