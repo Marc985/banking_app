@@ -5,10 +5,9 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.sql.Date;
 
 
 
 public class ExternalTransfert extends TransfertModal{
-
 }

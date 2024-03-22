@@ -10,8 +10,12 @@ import java.sql.Date;
 @NoArgsConstructor
 @Data
 public class TransfertModal {
-    long senderAccount;
-    double amount;
-    Date registerDate;
-    String reason;
+   private String reference;
+   private long senderAccount;
+   private  String reason;
+   private double amount;
+   private Date registerDate;
+   private Date effecitveDate;
+   private String status;
+
 }

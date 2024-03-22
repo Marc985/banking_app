@@ -1,6 +1,7 @@
 package com.prog3.exam.repository;
 
 import com.prog3.exam.entity.Transfert;
+import com.prog3.exam.entity.TransfertModal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -18,7 +19,7 @@ import java.util.List;
 public class TransfertRepository {
     @Autowired
 Connection connection;
-public String saveTransfert(Transfert transfert){
+public String saveTransfert(TransfertModal transfert,long senderAccount){
     String sql="insert into transfert values (?,?,?,?,?,?,?)";
     LocalDateTime current_date=LocalDateTime.now();
     String reference="VIR_"+current_date.toString();
@@ -27,10 +28,10 @@ public String saveTransfert(Transfert transfert){
         preparedStatement.setString(1,transfert.getReference());
         preparedStatement.setString(2,transfert.getReason());
         preparedStatement.setDouble(3,transfert.getAmount());
-        preparedStatement.setDate(4,transfert.getEffectiveDate());
-        preparedStatement.setDate(5,transfert.getRegistrationDate());
+        preparedStatement.setDate(4,transfert.getEffecitveDate());
+        preparedStatement.setDate(5,transfert.getRegisterDate());
         preparedStatement.setString(6,transfert.getStatus());
-        preparedStatement.setLong(7,transfert.getRecipientAccount());
+        preparedStatement.setLong(7,senderAccount);
         int row=preparedStatement.executeUpdate();
 
     }catch (Exception e){
@@ -53,22 +54,25 @@ return null;
 public List<Transfert> findByEffectiveDate(Date date){
     String sql = "select * from transfert where effective_date=?";
     List<Transfert> transferts=new ArrayList<>();
-    Transfert transfert =new Transfert();
     try {
         PreparedStatement preparedStatement= connection.prepareStatement(sql);
         preparedStatement.setDate(1,date);
         ResultSet resultSet=preparedStatement.executeQuery();
 
         while (resultSet.next()){
-            transfert.setSenderAccount(resultSet.getLong("account"));
+            Transfert transfert =new Transfert();
+
             transfert.setReference(resultSet.getString("reference"));
             transfert.setEffectiveDate(resultSet.getDate("effective_date"));
             transfert.setRegistrationDate(resultSet.getDate("registration_date"));
             transfert.setStatus(resultSet.getString("status"));
             transfert.setAmount(resultSet.getDouble("amount"));
             transfert.setReason(resultSet.getString("reason"));
-          transferts.add(transfert);
+            transfert.setSenderAccount(resultSet.getLong("account"));
+            transferts.add(transfert);
+
         }
+
     }catch (Exception e){
         e.printStackTrace();
     }
@@ -76,7 +80,7 @@ public List<Transfert> findByEffectiveDate(Date date){
 }
 
 public  List<Transfert> findALlTransfertByAccount(long accounNumber){
-    String sql="select * from transfert where account=?";
+    String sql="select * from transfert where account=? order by effective_date desc";
     List<Transfert> transferts=new ArrayList<>();
     try {
         PreparedStatement preparedStatement=connection.prepareStatement(sql);
@@ -86,6 +90,8 @@ public  List<Transfert> findALlTransfertByAccount(long accounNumber){
             Transfert transfert=new Transfert();
             transfert.setSenderAccount(resultSet.getLong("account"));
             transfert.setStatus(resultSet.getString("status"));
+            transfert.setReason(resultSet.getString("reason"));
+            transfert.setAmount(resultSet.getDouble("amount"));
             transfert.setReference(resultSet.getString("reference"));
             transfert.setRegistrationDate(resultSet.getDate("registration_date"));
             transfert.setEffectiveDate(resultSet.getDate("effective_date"));

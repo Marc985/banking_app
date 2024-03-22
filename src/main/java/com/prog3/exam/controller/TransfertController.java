@@ -2,12 +2,14 @@ package com.prog3.exam.controller;
 
 import com.prog3.exam.entity.MultipleTransfert;
 import com.prog3.exam.entity.Transfert;
+import com.prog3.exam.entity.TransfertModal;
 import com.prog3.exam.repository.TransfertRepository;
 import com.prog3.exam.service.TransfertService;
 import jakarta.websocket.server.PathParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Date;
 import java.util.List;
 
 @RestController
@@ -17,10 +19,10 @@ public class TransfertController {
     TransfertService transfertService;
     @Autowired
     TransfertRepository transfertRepository;
-    @PostMapping("/")
-    public String transfert(@RequestBody Transfert transfert){
+    @PostMapping("/perform")
+    public String transfert(@RequestBody Transfert transfert,@RequestParam boolean isSameBank){
 
-     return    transfertService.transfertMoney(transfert);
+     return    transfertService.transfertMoney(transfert,isSameBank);
 
     }
 
@@ -35,6 +37,10 @@ public class TransfertController {
     @GetMapping("/list/{accountNumber}")
     public List<Transfert> getTransfertList(@PathVariable long accountNumber){
         return transfertRepository.findALlTransfertByAccount(accountNumber);
+    }
+    @GetMapping("/listByDate/{date}")
+    public List<Transfert> getTransfert(@PathVariable Date date){
+        return transfertRepository.findByEffectiveDate(date);
     }
 
 }
