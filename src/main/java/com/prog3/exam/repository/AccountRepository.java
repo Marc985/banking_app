@@ -24,10 +24,24 @@ public class AccountRepository extends Request<Account> {
     SoldRepository soldRepository;
 
     @Override
-    public Account save(Account entity) {
+    public Account save(Account account) {
 
-        Account account= super.save(entity);
-        if(account !=null){
+        String sql="insert into account(account_number,client_name,client_last_name,birthdate," +
+                "monthly_net_income,is_eligible) values (?,?,?,?,?,?)";
+        int isCreated=0;
+        try {
+            PreparedStatement preparedStatement=connection.prepareStatement(sql);
+            preparedStatement.setLong(1,account.getAccountNumber());
+            preparedStatement.setString(2,account.getClientName());
+            preparedStatement.setString(3,account.getClientLastName());
+            preparedStatement.setDate(4,account.getBirthdate());
+            preparedStatement.setDouble(5,account.getMonthlyNetIncome());
+            preparedStatement.setBoolean(6,false);
+            isCreated=preparedStatement.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        if(isCreated>0){
             LocalDate date=LocalDate.now();
             Sold initalSold=new Sold();
             initalSold.setAccountId(account.getAccountNumber());
@@ -38,7 +52,7 @@ public class AccountRepository extends Request<Account> {
 
 
         }
-        return account;
+        return  account;
     }
 
     @Override
@@ -65,20 +79,26 @@ public class AccountRepository extends Request<Account> {
         return toUpdate;
     }
 
-    public Account findAccountById(float idAccount) {
+    public Account findAccountById(long idAccount) {
         String sql="select * from account where account_number="+idAccount;
         Account account=null;
+        String accountNumberColumn="account_number";
+        String  clientNameColumn="client_name";
+        String clientLastNameColumn="client_last_name";
+        String birthdateColumn="birthdate";
+        String monthlyNetColumn="monthly_net_income";
+        String isEligibleColumn="is_eligible";
         try {
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
             ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
              account=new Account(
-                     resultSet.getLong("account_number"),
-                     resultSet.getString("client_name"),
-                     resultSet.getString("client_last_name"),
-                     resultSet.getDate("birthdate"),
-                     resultSet.getDouble("monthly_net_income"),
-                     resultSet.getBoolean("is_eligible")
+                     resultSet.getLong(accountNumberColumn),
+                     resultSet.getString(clientNameColumn),
+                     resultSet.getString(clientLastNameColumn),
+                     resultSet.getDate(birthdateColumn),
+                     resultSet.getDouble(monthlyNetColumn),
+                     resultSet.getBoolean(isEligibleColumn)
              );
 
             }

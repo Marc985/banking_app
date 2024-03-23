@@ -14,7 +14,7 @@ public class WithdrawalController {
     @PostMapping("/account/{id}/withdrawals")
     public String withdrawalSold(@PathVariable long id,@RequestBody Withdrawal withdrawal){
     return     withdrawalService
-                .makeWithdrawal(id,withdrawal.getReason(),withdrawal.getAmount(),withdrawal.getDate());
+                .makeWithdrawal(id,withdrawal.getReason(),withdrawal.getAmount());
 
     }
 }

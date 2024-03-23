@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 @Service
 public class WithdrawalService {
@@ -21,7 +22,7 @@ public class WithdrawalService {
     @Autowired
     TransactionRepository transactionRepository;
 
-    public String makeWithdrawal(long idAccount,String reason, double amount, Date date){
+    public String makeWithdrawal(long idAccount,String reason, double amount){
         Account account = accountRepository.findAccountById(idAccount);
         if (!account.getIsEligible()) {
             return "This account is not eligible to make withdrawal";
@@ -42,13 +43,13 @@ public class WithdrawalService {
             return "The allowed credit + your actual sold don't cover the withdrawal";
         }
 
-    processWithDrawal(idAccount,actualSold,amount,date,reason);
+    processWithDrawal(idAccount,actualSold,amount,reason);
         return "success";
     }
-    private void processWithDrawal(long idAccount,double actualSold,double amount,Date date,String reason){
-
-      updateSold(date,idAccount,(actualSold-amount));
-      addTransaction(amount,reason,date,idAccount);
+    private void processWithDrawal(long idAccount,double actualSold,double amount,String reason){
+        LocalDate currentDate=LocalDate.now();
+      updateSold(Date.valueOf(currentDate),idAccount,(actualSold-amount));
+      addTransaction(amount,reason,Date.valueOf(currentDate),idAccount);
     }
 
      private void updateSold(Date date,long idAccount,double value){

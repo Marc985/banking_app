@@ -1,5 +1,6 @@
 package com.prog3.exam.entity;
 
+import com.prog3.exam.idgenerator.UniqueNumberGenerator;
 import lombok.*;
 import org.springframework.boot.context.properties.bind.DefaultValue;
 
@@ -11,12 +12,13 @@ import java.sql.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Account {
-    Long accountNumber;
-    String clientName;
-    String clientLastName;
-    Date birthdate;
-    double monthlyNetIncome;
-    boolean isEligible;
+
+ private    Long accountNumber=UniqueNumberGenerator.generateUniqueId();
+  private String clientName;
+   private String clientLastName;
+   private Date birthdate;
+   private double monthlyNetIncome;
+   private boolean isEligible;
 
     public Account(String clientName, String clientLastName, Date birthdate, double monthlyNetIncome){
         this.clientName=clientLastName;

@@ -43,6 +43,7 @@ public class TransfertService {
     public String transfertMoney(Transfert transfert,boolean isSameBank){
 
      Sold senderSold=soldRepository.findLastSoldByIdAccount(transfert.getSenderAccount());
+
      if(senderSold.getBalance()<transfert.getAmount())
          return "insufficient sold";
 

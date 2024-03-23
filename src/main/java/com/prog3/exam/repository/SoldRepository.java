@@ -47,19 +47,22 @@ public class SoldRepository extends Request<Sold>{
     public Sold save(Sold toSave){
         return super.save(toSave);
     }
-    public Sold findLastSoldByIdAccount(float idAccount){
-        String sql="select * from sold where account_id="+idAccount+"" +
+    public Sold findLastSoldByIdAccount(long idAccount){
+        String sql="select * from sold where account_id=?" +
                 " order by id_sold desc limit 1";
-        Sold sold=null;
+        Sold sold=new Sold();
+        String balanceColumn="balance";
+        String dateColumn="date";
+        String accountNumberColumn="account_id";
         try {
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
+            preparedStatement.setLong(1,idAccount);
             ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
-               sold= new Sold(
-                        resultSet.getDouble("balance"),
-                        resultSet.getDate("date"),
-                       resultSet.getLong("account_id")
-                );
+                       sold.setAccountId(resultSet.getLong(accountNumberColumn));
+                       sold.setDate(resultSet.getDate(dateColumn));
+                       sold.setAccountId(resultSet.getLong(accountNumberColumn));
+                       sold.setBalance(resultSet.getDouble(balanceColumn));
             }
         }catch (Exception e){
             e.printStackTrace();
