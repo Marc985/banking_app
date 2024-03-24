@@ -19,27 +19,21 @@ CREATE TABLE IF NOT EXISTS sold(
 
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE  TABLE IF NOT EXISTS category(
-    id_category serial primary key,
-    category_name varchar(100) check category_name IN( CHECK (category_type IN ('nourriture et boisson', 'achat et boutique en ligne', 'logement', 'transports', 'vehicule', 'loisirs', 'multimedia Info')
-)
-
-CREATE  TABLE  IF NOT EXISTS  "transaction"(
-    reference varchar(100)  primary key ,
-    "type" varchar(20) check (type='debit' or type='credit'),
+CREATE TABLE IF NOT EXISTS "transaction"(
+    reference varchar(100) PRIMARY KEY,
+    "type" varchar(20) CHECK (type='debit' OR type='credit'),
     amount double precision,
     "date" date,
     reason varchar(20),
-    account_number bigint references account(account_number),
-    int id_category REFERENCES category(id_category)
-
+    account_number bigint REFERENCES account(account_number),
+    id_category bigint REFERENCES category(id_category)
 );
 
 CREATE TABLE IF NOT EXISTS "category"(
     id_category serial primary key,
     category_name varchar(100),
-    category_type varchar(30) (check category_type='debit' or category_type='credit')
-                            );
+    category_type varchar(30) CHECK (category_type='debit' OR category_type='credit')
+);
 
 CREATE TABLE  IF NOT EXISTS transfert(
     reference varchar(100) primary key,
@@ -49,21 +43,19 @@ CREATE TABLE  IF NOT EXISTS transfert(
     registration_date date,
     status varchar(30) check ( status='canceled' or status='pending' or status='success' ),
     account bigint  REFERENCES account(account_number)
-
 );
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 
 CREATE TABLE IF NOT EXISTS interest_rate(
-     id_interest_rate serial primary key,
+    id_interest_rate serial primary key,
     first_7days float,
-     after_7days float
+    after_7days float
 );
 
 
-
-CREATE OR REPLACE FUNCTION account_statement(account_number INT,Date begin_date,Date end_date)
+CREATE OR REPLACE FUNCTION account_statement(account_number INT, begin_date DATE, end_date DATE)
 RETURNS TABLE (
     reference varchar(100),
     type varchar(20),
@@ -74,30 +66,27 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
 RETURN QUERY
-    SELECT
+SELECT
     t.reference,
     t."type",
     t.amount,
     t."date",
     t.reason,
- SUM(CASE WHEN t."type" = 'credit' THEN t.amount ELSE -t.amount END) OVER
-(
-PARTITION BY t.account_number
-ORDER BY t."date"
-ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
-) AS balance
-    FROM
-    "transaction" t
-    WHERE
+    SUM(CASE WHEN t."type" = 'credit' THEN t.amount ELSE -t.amount END) OVER
+    (
+    PARTITION BY t.account_number
+    ORDER BY t."date"
+    ROWS BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+    ) AS balance
+FROM
+    "transaction"
+WHERE
     t."date" BETWEEN begin_date AND end_date
-    AND t.account_number = account_statement.account_number
-    ORDER BY
+  AND t.account_number = account_statement.account_number
+ORDER BY
     t."date" DESC;
 END; $$
 LANGUAGE plpgsql;
-
-
-
 
 
 __________ DUMMY DATA_____________
