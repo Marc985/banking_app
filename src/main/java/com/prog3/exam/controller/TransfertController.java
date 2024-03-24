@@ -20,12 +20,15 @@ public class TransfertController {
     @Autowired
     TransfertRepository transfertRepository;
     @PostMapping("/perform")
-    public String transfert(@RequestBody Transfert transfert,@RequestParam boolean isSameBank){
+    public String transfert(@RequestBody Transfert transfert){
 
-     return    transfertService.transfertMoney(transfert,isSameBank);
+     return    transfertService.transfertMoney(transfert);
 
     }
-
+    @PostMapping("/sheduled")
+    public String sheduledTransfert(@RequestBody Transfert transfert){
+        return transfertService.sheduledTransfert(transfert);
+    }
     @PutMapping("/cancel")
     public String cancelTransfert(@RequestParam String reference){
         return transfertService.cancelTransfert(reference);

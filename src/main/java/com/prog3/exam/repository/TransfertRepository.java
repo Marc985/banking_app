@@ -40,7 +40,7 @@ public String saveTransfert(TransfertModal transfert,long senderAccount){
     return "saved successfully";
 }
 public String updateStatus(String status,String transfertReference){
-    String sql = "update transfert set status=? where reference=?";
+    String sql = "update transfert set status=? where reference=? and status='pending'";
     try {
         PreparedStatement preparedStatement= connection.prepareStatement(sql);
         preparedStatement.setString(1,status);
@@ -52,11 +52,12 @@ public String updateStatus(String status,String transfertReference){
 return null;
 }
 public List<Transfert> findByEffectiveDate(Date date){
-    String sql = "select * from transfert where effective_date=?";
+    String sql = "select * from transfert where effective_date=? or effective_date<?";
     List<Transfert> transferts=new ArrayList<>();
     try {
         PreparedStatement preparedStatement= connection.prepareStatement(sql);
         preparedStatement.setDate(1,date);
+        preparedStatement.setDate(2,date);
         ResultSet resultSet=preparedStatement.executeQuery();
 
         while (resultSet.next()){

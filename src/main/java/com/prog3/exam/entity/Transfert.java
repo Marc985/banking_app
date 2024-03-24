@@ -18,8 +18,4 @@ public class Transfert implements Serializable {
    private String status;
    private long senderAccount;
    private long recipientAccount;
-   private boolean isSameBank;
-public boolean getIsSameBank(){
-   return this.isSameBank;
-}
 }

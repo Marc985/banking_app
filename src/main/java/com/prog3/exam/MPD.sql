@@ -35,7 +35,11 @@ CREATE  TABLE  IF NOT EXISTS  "transaction"(
 
 );
 
-
+CREATE TABLE IF NOT EXISTS "category"(
+    id_category serial primary key,
+    category_name varchar(100),
+    category_type varchar(30) (check category_type='debit' or category_type='credit')
+                            );
 
 CREATE TABLE  IF NOT EXISTS transfert(
     reference varchar(100) primary key,

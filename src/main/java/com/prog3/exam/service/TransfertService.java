@@ -40,7 +40,7 @@ public class TransfertService {
    return "entrance transfert proccessed successfully";
     }
 
-    public String transfertMoney(Transfert transfert,boolean isSameBank){
+    public String transfertMoney(Transfert transfert){
 
      Sold senderSold=soldRepository.findLastSoldByIdAccount(transfert.getSenderAccount());
 
@@ -48,8 +48,8 @@ public class TransfertService {
          return "insufficient sold";
 
      String reference="VIR_"+ LocalDateTime.now();
-
-        if(isSameBank){
+        Account account=accountRepository.findAccountById(transfert.getRecipientAccount());
+        if(account!=null){
 
               internalTransfert(reference,transfert.getSenderAccount(),senderSold.getBalance(), transfert);
 
@@ -58,7 +58,9 @@ public class TransfertService {
 
      }
      else {
-             externalTransfert(reference,transfert.getSenderAccount(), transfert);
+            long transfertDelay=2;
+            LocalDate effectiveDate=LocalDate.now().plusDays(transfertDelay);
+             externalTransfert(reference,transfert.getSenderAccount(), transfert,Date.valueOf(effectiveDate));
 
 
 
@@ -66,22 +68,30 @@ public class TransfertService {
      }
      return  reference;
  }
+ public  String sheduledTransfert(Transfert transfert){
+     String reference="VIR_"+ LocalDateTime.now();
+     externalTransfert(reference,transfert.getSenderAccount(),transfert,transfert.getEffectiveDate());
+     return reference;
+ }
  private void internalTransfert(String reference,long senderAccount,double senderSold,Transfert transfert){
+        Date currentDate=Date.valueOf(LocalDate.now());
+
      Sold recipientSold=soldRepository.findLastSoldByIdAccount(transfert.getRecipientAccount());
 
-     updateSold(senderAccount,(senderSold-transfert.getAmount()),transfert.getRegistrationDate());
+     updateSold(senderAccount,(senderSold-transfert.getAmount()),currentDate);
 
-     updateSold(transfert.getRecipientAccount(),(recipientSold.getBalance()+transfert.getAmount()),transfert.getRegistrationDate());
+     updateSold(transfert.getRecipientAccount(),(recipientSold.getBalance()+transfert.getAmount()),currentDate);
 
-     addTransaction(senderAccount,transfert.getRegistrationDate(),transfert.getReason(),"debit",transfert.getAmount());
+     addTransaction(senderAccount,currentDate,transfert.getReason(),"debit",transfert.getAmount());
 
-     addTransaction(transfert.getRecipientAccount(),transfert.getRegistrationDate(),transfert.getReason(),"credit",transfert.getAmount());
+     addTransaction(transfert.getRecipientAccount(),currentDate,transfert.getReason(),"credit",transfert.getAmount());
 
-     addTransfertHistory(reference,transfert.getAmount(),transfert.getReason(),senderAccount,transfert.getRegistrationDate(),transfert.getRegistrationDate(),"success");
+     addTransfertHistory(reference,transfert.getAmount(),transfert.getReason(),senderAccount,currentDate,currentDate,"success");
  }
- private void externalTransfert(String reference, long senderAccount,Transfert transfert){
+ private void externalTransfert(String reference, long senderAccount,Transfert transfert,Date effectiveDate){
+     LocalDate currentDate=LocalDate.now();
 
-     addTransfertHistory(reference,transfert.getAmount(),transfert.getReason(),senderAccount,transfert.getRegistrationDate(),transfert.getEffectiveDate(),"pending");
+     addTransfertHistory(reference,transfert.getAmount(),transfert.getReason(),senderAccount,Date.valueOf(currentDate),effectiveDate,"pending");
 
  }
 
@@ -146,6 +156,7 @@ public class TransfertService {
  }
 
  public String cancelTransfert(String reference){
-      return   transfertRepository.updateStatus("canceled",reference);
+        String status="canceled";
+      return   transfertRepository.updateStatus(status,reference);
  }
 }
