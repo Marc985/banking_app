@@ -2,12 +2,13 @@ package com.prog3.exam.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
-public class InternalTransfert extends TransfertModal{
-    private long recipientAccount;
+public class EntryExpense implements Serializable {
+    private double entry;
+    private double expense;
 }
