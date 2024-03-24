@@ -13,7 +13,7 @@ public class TransactionRepository {
 @Autowired
     Connection connection;
 public Transaction saveTransaction(Transaction transaction){
-    String sql="insert into transaction values (?,?,?,?,?,?)";
+    String sql="insert into transaction values (?,?,?,?,?,?,?)";
     String transactionReference= "VIR_"+LocalDateTime.now().toString();
     try {
         PreparedStatement preparedStatement=connection.prepareStatement(sql);
@@ -24,6 +24,7 @@ public Transaction saveTransaction(Transaction transaction){
         preparedStatement.setDate(4,transaction.getDate());
         preparedStatement.setString(5,transaction.getReason());
         preparedStatement.setLong(6,transaction.getAccountNumber());
+        preparedStatement.setInt(7,transaction.getCategory());
         int response=preparedStatement.executeUpdate();
     }catch (Exception e){
         e.printStackTrace();

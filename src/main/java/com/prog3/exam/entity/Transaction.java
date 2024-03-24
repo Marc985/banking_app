@@ -20,4 +20,5 @@ public class Transaction implements Serializable {
     private Date date;
     private  String reason;
     private long accountNumber;
+    private int category;
 }
