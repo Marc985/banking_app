@@ -24,12 +24,13 @@ public class WithdrawalService {
 
     public String makeWithdrawal(long idAccount,String reason, double amount){
         Account account = accountRepository.findAccountById(idAccount);
-        if (!account.getIsEligible()) {
+        Sold sold = soldRepository.findLastSoldByIdAccount(idAccount);
+
+        if (!account.getIsEligible()&&sold.getBalance()<amount) {
             return "This account is not eligible to make withdrawal";
         }
 
        // Loan lastLoan = loanRepository.getLastLoan(idAccount);
-        Sold sold = soldRepository.findLastSoldByIdAccount(idAccount);
         double actualSold = sold.getBalance();
 
         if (actualSold<0) {
