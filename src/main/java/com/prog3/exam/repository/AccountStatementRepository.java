@@ -45,4 +45,34 @@ public class AccountStatementRepository {
         }
         return accountStatements;
     }
+    public AccountStatement getByReference(String reference){
+        String sql="select * from account_statement where reference="+reference;
+        AccountStatement accountStatement=new AccountStatement();
+        try{
+            PreparedStatement preparedStatement=connection.prepareStatement(sql);
+
+            ResultSet resultSet=preparedStatement.executeQuery();
+            while (resultSet.next()){
+
+                accountStatement.setReference(resultSet.getString("reference"));
+                accountStatement.setDate(resultSet.getDate("transaction_date"));
+                accountStatement.setSold(resultSet.getDouble("balance"));
+                accountStatement.setReason(resultSet.getString("reason"));
+
+                String type= resultSet.getString("type");
+                if(type.equals("debit")){
+                    accountStatement.setDebit(resultSet.getDouble("amount"));
+                    accountStatement.setCredit(0);
+                }
+                else{
+                    accountStatement.setCredit(resultSet.getDouble("amount"));
+                    accountStatement.setDebit(0);
+                }
+
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return accountStatement;
+    }
 }
