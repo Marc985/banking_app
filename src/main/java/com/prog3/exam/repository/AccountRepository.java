@@ -9,8 +9,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class AccountRepository extends Request<Account> {
@@ -23,20 +25,29 @@ public class AccountRepository extends Request<Account> {
     @Autowired
     SoldRepository soldRepository;
 
+
+
+    String accountNameColumn="account_name";
+    String accountNumberColumn="account_number";
+    String idClientColumn="id_client";
+    String isEligibleColumn="is_eligible";
+
+
     @Override
     public Account save(Account account) {
 
-        String sql="insert into account(account_number,client_name,client_last_name,birthdate," +
-                "monthly_net_income,is_eligible) values (?,?,?,?,?,?)";
+
+
+        String sql="insert into account(account_number,is_eligible,id_client,account_name) values (?,?,?,?)";
         int isCreated=0;
         try {
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
             preparedStatement.setLong(1,account.getAccountNumber());
-            preparedStatement.setString(2,account.getClientName());
-            preparedStatement.setString(3,account.getClientLastName());
-            preparedStatement.setDate(4,account.getBirthdate());
-            preparedStatement.setDouble(5,account.getMonthlyNetIncome());
-            preparedStatement.setBoolean(6,false);
+            preparedStatement.setBoolean(2,false);
+            preparedStatement.setString(3, account.getIdClient());
+            preparedStatement.setString(4,account.getAccountName());
+
+
             isCreated=preparedStatement.executeUpdate();
         }catch (Exception e){
             e.printStackTrace();
@@ -55,52 +66,46 @@ public class AccountRepository extends Request<Account> {
         return  account;
     }
 
-    @Override
-    public List<Account> findAll() {
-        return super.findAll();
-    }
+    public List<Account> findAllByIdClient(String idClient) {
+        String sql="select * from account where id_client=?";
+        List<Account> accounts=new ArrayList<>();
 
-
-    public Account updateAccount(Account toUpdate) {
-        String clientName = toUpdate.getClientName();
-        String lastName = toUpdate.getClientLastName();
-        Date birthdate = toUpdate.getBirthdate();
-        double monthlyNetIncome = toUpdate.getMonthlyNetIncome();
-        String sql = "update account set client_name='" + clientName + "'," +
-                " client_last_name='" + lastName + "', birthdate='" + birthdate + "'," +
-                " monthly_net_income='" + monthlyNetIncome + "'";
         try {
-            PreparedStatement preparedStatement = connection.prepareStatement(sql);
-            int resultSet = preparedStatement.executeUpdate();
+            PreparedStatement preparedStatement=connection.prepareStatement(sql);
+            preparedStatement.setString(1,idClient);
+            ResultSet resultSet=preparedStatement.executeQuery();
 
-        } catch (Exception e) {
+
+            while (resultSet.next()){
+                Account account=new Account();
+                account.setAccountNumber(resultSet.getLong(accountNumberColumn));
+                account.setAccountName(resultSet.getString(accountNameColumn));
+                account.setIdClient(resultSet.getString(idClientColumn));
+                account.setEligible(resultSet.getBoolean(isEligibleColumn));
+                accounts.add(account);
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
-        return toUpdate;
+        return  accounts;
     }
+
+
+
 
     public Account findAccountById(long idAccount) {
         String sql="select * from account where account_number="+idAccount;
-        Account account=null;
-        String accountNumberColumn="account_number";
-        String  clientNameColumn="client_name";
-        String clientLastNameColumn="client_last_name";
-        String birthdateColumn="birthdate";
-        String monthlyNetColumn="monthly_net_income";
-        String isEligibleColumn="is_eligible";
+        Account account=new Account();
+
         try {
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
             ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
-             account=new Account(
-                     resultSet.getLong(accountNumberColumn),
-                     resultSet.getString(clientNameColumn),
-                     resultSet.getString(clientLastNameColumn),
-                     resultSet.getDate(birthdateColumn),
-                     resultSet.getDouble(monthlyNetColumn),
-                     resultSet.getBoolean(isEligibleColumn)
-             );
 
+                account.setAccountNumber(resultSet.getLong(accountNumberColumn));
+                account.setAccountName(resultSet.getString(accountNameColumn));
+                account.setIdClient(resultSet.getString(idClientColumn));
+                account.setEligible(resultSet.getBoolean(isEligibleColumn));
             }
         }catch (Exception e){
             e.printStackTrace();

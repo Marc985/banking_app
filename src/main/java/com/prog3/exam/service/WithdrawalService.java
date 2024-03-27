@@ -1,9 +1,11 @@
 package com.prog3.exam.service;
 
 import com.prog3.exam.entity.Account;
+import com.prog3.exam.entity.Client;
 import com.prog3.exam.entity.Sold;
 import com.prog3.exam.entity.Transaction;
 import com.prog3.exam.repository.AccountRepository;
+import com.prog3.exam.repository.ClientRepository;
 import com.prog3.exam.repository.SoldRepository;
 import com.prog3.exam.repository.TransactionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +24,10 @@ public class WithdrawalService {
     @Autowired
     TransactionRepository transactionRepository;
 
+    @Autowired
+    ClientRepository clientRepository;
     public String makeWithdrawal(long idAccount,String reason, double amount){
+        Client client=clientRepository.findByIdAccount(idAccount);
         Account account = accountRepository.findAccountById(idAccount);
         Sold sold = soldRepository.findLastSoldByIdAccount(idAccount);
 
@@ -39,7 +44,7 @@ public class WithdrawalService {
 
 
 
-        double allowedCredit = account.getMonthlyNetIncome() / 3;
+        double allowedCredit = client.getMonthlyNetSalary() / 3;
         if ((allowedCredit + actualSold) < amount) {
             return "The allowed credit + your actual sold don't cover the withdrawal";
         }

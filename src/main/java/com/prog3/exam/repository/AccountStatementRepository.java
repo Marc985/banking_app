@@ -16,7 +16,7 @@ public class AccountStatementRepository {
     @Autowired
     Connection connection;
     public List<AccountStatement> getAccountStatement(long accountNumber, Date startDate,Date endDate){
-        String sql="select * from account_statement("+accountNumber+",'"+startDate+"','"+endDate+"')";
+        String sql="select * from account_statement("+accountNumber+",'"+startDate+"','"+endDate+"',null)";
         List<AccountStatement> accountStatements=new ArrayList<>();
         try{
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
@@ -46,7 +46,8 @@ public class AccountStatementRepository {
         return accountStatements;
     }
     public AccountStatement getByReference(String reference){
-        String sql="select * from account_statement where reference="+reference;
+        String sql="select * from account_statement(null,null,null"+",'"+reference+"')";
+
         AccountStatement accountStatement=new AccountStatement();
         try{
             PreparedStatement preparedStatement=connection.prepareStatement(sql);
