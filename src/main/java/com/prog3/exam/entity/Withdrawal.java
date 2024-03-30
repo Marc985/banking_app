@@ -14,4 +14,5 @@ public class Withdrawal implements Serializable {
     double amount;
     String reason;
     Date date;
+    int category;
 }
