@@ -9,7 +9,6 @@ import java.sql.Date;
 import java.util.List;
 
 @RestController
-@CrossOrigin
 public class AccountStatementController {
     @Autowired
     AccountStatementRepository accountStatementRepository;

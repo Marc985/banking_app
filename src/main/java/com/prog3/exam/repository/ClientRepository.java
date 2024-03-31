@@ -67,6 +67,22 @@ public class ClientRepository extends  Request<Client> {
         return client;
 
     }
+    public Client updateClientById(String idClient,Client client){
+       String sql= "UPDATE client SET first_name = ?, last_name = ?, monthly_net_salary = ? WHERE id = ?";
+       try {
+           PreparedStatement preparedStatement=connection.prepareStatement(sql);
+           preparedStatement.setString(1,client.getFirstName());
+           preparedStatement.setString(2,client.getLastName());
+           preparedStatement.setDouble(3,client.getMonthlyNetSalary());
+           preparedStatement.setString(4,idClient);
+           int result=preparedStatement.executeUpdate();
+
+
+       }catch (Exception e){
+           e.printStackTrace();
+       }
+       return client;
+    }
     @Override
     public Client save(Client client){
         return super.save(client);

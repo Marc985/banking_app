@@ -6,7 +6,46 @@ servers:
   - url: http://localhost:8080
     description: Local server
 paths:
- /accounts:
+  /clients:
+    get:
+      summary: get clients list
+      responses:
+        200:
+          description: List of clients
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/clientResponse'
+  /client:
+    post:
+      summary: add new client
+      responses:
+        200:
+          description: client added successfully
+          content:
+            application/json:
+              schema:
+                type: string
+
+
+  /client/{id}:
+    get:
+      summary: get client by id
+      parameters:
+        - in: path
+          required: true
+          name: "id"
+      responses:
+        200:
+          description: founded account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/clientResponse'
+
+  /accounts:
     get:
       summary: Get all accounts
       responses:
@@ -17,9 +56,9 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Account'
+                  $ref: '#/components/schemas/AccountResponse'
   
- /account: 
+  /account:
     post:
       summary: Create a new account
       requestBody:
@@ -27,7 +66,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountCreate'
+              $ref: '#/components/schemas/Account'
       responses:
         '201':
           description: Account created successfully
@@ -44,15 +83,15 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AccountUpdate'
+              $ref: '#/components/schemas/Account'
       responses:
         '200':
           description: Account information updated fff
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AccountUpdate'
- /account/{id}/withdrawals:
+                $ref: '#/components/schemas/Account'
+  /account/{id}/withdrawals:
     post:
       summary: Perform a withdrawal
       parameters:
@@ -70,8 +109,8 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WithdrawalResponse'
- /interestRate:
-  put:
+  /interestRate:
+    put:
     summary: Update the interest rate of the loan
     requestBody:
       required: true
@@ -92,7 +131,7 @@ paths:
           application/json:
             schema:
               type: string
- /soldAndLoan/{id}:
+  /soldAndLoan/{id}:
     get:
       summary: display account balance and loan permanently
       parameters:
@@ -104,7 +143,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/BalanceResponse'
- /sold/{id}:
+  /sold/{id}:
     get:
       summary: Check account balance on given date
       parameters:
@@ -118,7 +157,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/BalanceResponseByDate'
 
- /account/{id}/deposits:
+  /account/{id}/deposits:
     post:
       summary: Perform a deposit
       parameters:
@@ -136,7 +175,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DepositResponse'
- /account/{id}/transfers:
+  /account/{id}/transfers:
     post:
       summary: Perform a transfer
       parameters:
@@ -154,7 +193,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferResponse'
- /transaction/{id}/categorize:
+  /transaction/{id}/categorize:
     put:
       summary: Catégoriser une transaction existante
       parameters:
@@ -172,7 +211,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransactionCategorizationResponse'
- /transactions/categorize:
+  /transactions/categorize:
     put:
       summary: Catégoriser plusieurs transactions à la fois
       requestBody:
@@ -188,7 +227,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/MultipleTransactionCategorizationResponse'
- /dashboard:
+  /dashboard:
     get:
       summary: Obtenir les données du tableau de bord
       parameters:
@@ -240,53 +279,42 @@ components:
         type: string
         enum: [day, month]
  schemas:
-    Account: 
-      type: object
-      properties:
-        name:
+   client:
+     type: object
+     properties:
+      firstName:
+         type: string
+      lastName:
           type: string
-        firstName:
-          type: string
-        dateOfBirth:
-          type: number
-        monthlyNetIncome:
-          type: number
-        
-    AccountCreate:
-      type: object
-      properties:
-        accountNumber:
-          type: number
-        clientName:
-          type: string
-        clientLastName:
-          type: string
-        birthdate:
+      birthdate:
           type: string
           format: date
-        monthlyNetIncome:
-          type: number
-       
-    AccountUpdate:
+      monthlyNetSalary:
+        type: number
+   clientResponse:
+     allOf:
+       - $ref: '#/components/schemas/client'
+       - properties:
+           idClient:
+             type: string
+   Account:
       type: object
       properties:
-        clientName:
+        accountName:
           type: string
-        clientLastName:
-          type: string
-        birthDate:
-          type: string
-          format: date
-        monthLyNetIncome:
-          type: number
-    AccountResponse:
-      type: object
-      properties:
-        id:
-          type: integer
-        message:
-          type: string
-    WithdrawalRequest:
+        idClient:
+            type: string
+   AccountResponse:
+      allOf:
+        - $ref: '#/components/schemas/Account'
+        - properties:
+            isEligible:
+              type: boolean
+            accountNumber:
+              type: number
+
+
+   WithdrawalRequest:
       type: object
       properties:
         amount:
@@ -296,9 +324,9 @@ components:
         date:
           type: string
           format: date
-    WithdrawalResponse:
+   WithdrawalResponse:
       type: string
-    BalanceResponse:
+   BalanceResponse:
       type: object
       properties:
         principalBalance:
@@ -307,7 +335,7 @@ components:
           type: number
         loanInterest:
           type: number
-    BalanceResponseByDate:
+   BalanceResponseByDate:
       type: object
       properties:
         balance: 
@@ -317,7 +345,7 @@ components:
           format: date
         accountId:
           type: integer
-    DepositRequest:
+   DepositRequest:
       type: object
       properties:
         amount:
@@ -330,12 +358,12 @@ components:
         registrationDate:
           type: string
           format: date
-    DepositResponse:
+   DepositResponse:
       type: object
       properties:
         message:
           type: string
-    TransferRequest:
+   TransferRequest:
       type: object
       properties:
         amount:
@@ -352,38 +380,38 @@ components:
           type: integer
         sameBank:
           type: boolean
-    TransferResponse:
+   TransferResponse:
       type: object
       properties:
         transferReference:
           type: string
         message:
           type: string
-    TransactionCategorizationRequest:
+   TransactionCategorizationRequest:
       type: object
       properties:
         category:
           type: string
         comment:
           type: string
-    TransactionCategorizationResponse:
+   TransactionCategorizationResponse:
       type: object
       properties:
         message:
           type: string
-    MultipleTransactionCategorizationRequest:
+   MultipleTransactionCategorizationRequest:
       type: object
       properties:
         transactions:
           type: array
           items:
             $ref: '#/components/schemas/TransactionCategorizationRequest'
-    MultipleTransactionCategorizationResponse:
+   MultipleTransactionCategorizationResponse:
       type: object
       properties:
         message:
           type: string
-    DashboardData:
+   DashboardData:
       type: object
       properties:
         pie_chart_data:

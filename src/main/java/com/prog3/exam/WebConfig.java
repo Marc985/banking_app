@@ -11,6 +11,11 @@ import java.rmi.registry.Registry;
 @EnableWebMvc
 public class WebConfig implements WebMvcConfigurer {
     public void addCorsMapping(CorsRegistry registry){
-        registry.addMapping("/**");
+
+        registry.addMapping("/**")
+                .allowedOrigins("*")
+                .allowedMethods("*")
+                .allowedHeaders("*")
+                .allowCredentials(true);
     }
 }
