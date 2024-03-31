@@ -68,7 +68,7 @@ public class ClientRepository extends  Request<Client> {
 
     }
     public Client updateClientById(String idClient,Client client){
-       String sql= "UPDATE client SET first_name = ?, last_name = ?, monthly_net_salary = ? WHERE id = ?";
+       String sql= "UPDATE client SET first_name = ?, last_name = ?, monthly_net_salary = ? WHERE id_client = ?";
        try {
            PreparedStatement preparedStatement=connection.prepareStatement(sql);
            preparedStatement.setString(1,client.getFirstName());
