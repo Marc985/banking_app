@@ -21,6 +21,12 @@ paths:
   /client:
     post:
       summary: add new client
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/client'
       responses:
         200:
           description: client added successfully
@@ -36,10 +42,29 @@ paths:
       parameters:
         - in: path
           required: true
-          name: "id"
+          name: "idClient"
       responses:
         200:
           description: founded account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/clientResponse'
+    put:
+      summary: update client by id
+      parameters:
+        - in: path
+          required: true
+          name: "idClient"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/client'
+      responses:
+        200:
+          description: info updated
           content:
             application/json:
               schema:
@@ -74,23 +99,7 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/AccountResponse'
-    put:
-      summary: Update account information
-      parameters:
-        - $ref: '#/components/parameters/idAccount'
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Account'
-      responses:
-        '200':
-          description: Account information updated fff
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Account'
+
   /account/{id}/withdrawals:
     post:
       summary: Perform a withdrawal
@@ -111,26 +120,8 @@ paths:
                 $ref: '#/components/schemas/WithdrawalResponse'
   /interestRate:
     put:
-    summary: Update the interest rate of the loan
-    requestBody:
-      required: true
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              first7days:
-                type: number
-              after7days:
-                type: number
-      
-    responses:
-      '200':
-        description: Interest rate updated successfully
-        content:
-          application/json:
-            schema:
-              type: string
+      summary: update interest rate
+
   /soldAndLoan/{id}:
     get:
       summary: display account balance and loan permanently

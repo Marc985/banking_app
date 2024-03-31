@@ -12,10 +12,10 @@ import java.util.UUID;
 @NoArgsConstructor
 @Data
 public class Client implements Serializable {
-    String idClient=UUID.randomUUID().toString();
-    String firstName;
-    String lastName;
-    Date birthdate;
-    double monthlyNetSalary;
+   private String idClient=UUID.randomUUID().toString();
+   private String firstName;
+   private String lastName;
+   private Date birthdate;
+   private double monthlyNetSalary;
 
 }
