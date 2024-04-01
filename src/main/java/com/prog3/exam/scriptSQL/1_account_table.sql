@@ -1,9 +1,10 @@
 
-CREATE  TABLE IF NOT EXISTS  account(
-    account_number bigint primary key,
-    account_name,
-    is_eligible boolean default false
-    );
+CREATE TABLE IF NOT EXISTS account (
+    account_number bigint PRIMARY KEY,
+    account_name VARCHAR,
+    is_eligible boolean DEFAULT false
+);
+
 
 CREATE  TABLE client(
     id_client varchar(100) primary key ,

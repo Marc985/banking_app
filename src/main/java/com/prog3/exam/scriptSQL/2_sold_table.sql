@@ -6,6 +6,8 @@ CREATE TABLE IF NOT EXISTS sold(
 
     );
 
+
+
 INSERT INTO sold (balance, "date", account_id)
-VALUES (1000.00, '2023-04-01', 123456789)
-    ON CONFLICT (id_sold) DO NOTHING;
+VALUES (1000.00, '2023-04-01', 1234567829)
+ON CONFLICT (id_sold) DO NOTHING;
