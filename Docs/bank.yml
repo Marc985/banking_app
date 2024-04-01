@@ -1,26 +1,23 @@
 openapi: 3.0.0
 info:
- title: Bank Account Management API
- version: 1.0.0
+  title: Bank Account Management API
+  version: 1.0.0
 servers:
   - url: http://localhost:8080
     description: Local server
+tags:
+  - name: "client"
+  - name: "account"
+  - name: "sold"
+  - name: 'transfer'
+  - name: 'admin'
+
 paths:
-  /clients:
-    get:
-      summary: get clients list
-      responses:
-        200:
-          description: List of clients
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/clientResponse'
   /client:
     post:
       summary: add new client
+      tags:
+        - client
       requestBody:
         required: true
         content:
@@ -36,9 +33,11 @@ paths:
                 type: string
 
 
-  /client/{id}:
+  /client/{idClient}:
     get:
       summary: get client by id
+      tags:
+        - client
       parameters:
         - in: path
           required: true
@@ -52,6 +51,8 @@ paths:
                 $ref: '#/components/schemas/clientResponse'
     put:
       summary: update client by id
+      tags:
+        - client
       parameters:
         - in: path
           required: true
@@ -73,6 +74,8 @@ paths:
   /accounts:
     get:
       summary: Get all accounts
+      tags:
+        - account
       responses:
         '200':
           description: List of accounts
@@ -86,6 +89,8 @@ paths:
   /account:
     post:
       summary: Create a new account
+      tags:
+        - account
       requestBody:
         required: true
         content:
@@ -103,6 +108,8 @@ paths:
   /account/{id}/withdrawals:
     post:
       summary: Perform a withdrawal
+      tags:
+        - account
       parameters:
         - $ref: '#/components/parameters/idAccount'
       requestBody:
@@ -118,13 +125,50 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WithdrawalResponse'
+  /statement/{accountNumber}:
+    get:
+      description: get account statement on a given date
+      tags:
+        - account
+      parameters:
+          - $ref: '#/components/parameters/idAccount'
+          - $ref: '#/components/parameters/DateRange'
+      responses:
+        200:
+          description: account statement list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/accountStatementResponse'
   /interestRate:
     put:
       summary: update interest rate
+      tags:
+        - admin
+      parameters:
+        - in: path
+          name: "accountNumber"
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InterestRate'
+      responses:
+        200:
+          description: "interst rate updated"
+          content:
+            application/json:
+              schema:
+                type: string
 
   /soldAndLoan/{id}:
     get:
       summary: display account balance and loan permanently
+      tags:
+        - sold
       parameters:
         - $ref: '#/components/parameters/idAccount'
       responses:
@@ -137,6 +181,8 @@ paths:
   /sold/{id}:
     get:
       summary: Check account balance on given date
+      tags:
+        - sold
       parameters:
         - $ref: '#/components/parameters/idAccount'
         - $ref: '#/components/parameters/DateQuery'
@@ -148,9 +194,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/BalanceResponseByDate'
 
-  /account/{id}/deposits:
+  /account/{id}/supply:
     post:
-      summary: Perform a deposit
+      summary: Perform a supply
+      tags:
+        - account
       parameters:
         - $ref: '#/components/parameters/idAccount'
       requestBody:
@@ -166,17 +214,17 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/DepositResponse'
-  /account/{id}/transfers:
+  /transfert/perform:
     post:
       summary: Perform a transfer
-      parameters:
-        - $ref: '#/components/parameters/idAccount'
+      tags:
+        - transfer
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransferRequest'
+              $ref: '#/components/schemas/Transfer'
       responses:
         '201':
           description: Transfer performed successfully
@@ -184,55 +232,85 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/TransferResponse'
-  /transaction/{id}/categorize:
-    put:
-      summary: Catégoriser une transaction existante
-      parameters:
-        - $ref: '#/components/parameters/TransactionId'
+  /transfert/sheduled:
+    post:
+      summary: perfom scheduled transfer
+      tags:
+        - transfer
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/TransactionCategorizationRequest'
+              $ref: '#/components/schemas/ScheduledTransferRequest'
       responses:
-        '200':
-          description: Transaction catégorisée avec succès
+        200:
+          description: transfer performed successfylly
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/TransactionCategorizationResponse'
-  /transactions/categorize:
-    put:
-      summary: Catégoriser plusieurs transactions à la fois
+                $ref: '#/components/schemas/TransferResponse'
+  /transfert/multiple:
+    post:
+      summary: make mutltiple tranfer
+      tags:
+        - transfer
       requestBody:
-        required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MultipleTransactionCategorizationRequest'
+              $ref: '#/components/schemas/MultipleTransfer'
       responses:
-        '200':
-          description: Transactions catégorisées avec succès
+        200:
+          description: multiple transfer performed successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MultipleTransactionCategorizationResponse'
-  /dashboard:
+                $ref: '#/components/schemas/TransferResponse'
+
+  /entryExpense/{accountNumber}:
     get:
-      summary: Obtenir les données du tableau de bord
+      summary: get entry and expense sum for an account
+      tags:
+        - account
       parameters:
+        - $ref: '#/components/parameters/idAccount'
         - $ref: '#/components/parameters/DateRange'
-        - $ref: '#/components/parameters/Interval'
       responses:
-        '200':
-          description: Données du tableau de bord obtenues avec succès
+        200:
+          description: entry and expense on the given date
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/DashboardData'
+                type: object
+                properties:
+                  entry:
+                    type: number
+                  expense:
+                    type: number
+  /categorySum/{accountNumber}:
+    get:
+      summary: get amount sum for each category
+      tags:
+        - account
+      parameters:
+        - $ref: '#/components/parameters/idAccount'
+        - $ref: '#/components/parameters/DateRange'
+      responses:
+        200:
+          description: amount sum on the given date
+          content:
+            application/json:
+              schema:
+                type: array
+                properties:
+                  items:
+                    $ref: '#/components/schemas/CategoryResponse'
+
+
+
+
 components:
- parameters:
+  parameters:
     idAccount:
       name: id
       in: path
@@ -268,34 +346,34 @@ components:
       in: query
       schema:
         type: string
-        enum: [day, month]
- schemas:
-   client:
-     type: object
-     properties:
-      firstName:
-         type: string
-      lastName:
+        enum: [ day, month ]
+  schemas:
+    client:
+      type: object
+      properties:
+        firstName:
           type: string
-      birthdate:
+        lastName:
+          type: string
+        birthdate:
           type: string
           format: date
-      monthlyNetSalary:
-        type: number
-   clientResponse:
-     allOf:
-       - $ref: '#/components/schemas/client'
-       - properties:
-           idClient:
-             type: string
-   Account:
+        monthlyNetSalary:
+          type: number
+    clientResponse:
+      allOf:
+        - $ref: '#/components/schemas/client'
+        - properties:
+            idClient:
+              type: string
+    Account:
       type: object
       properties:
         accountName:
           type: string
         idClient:
-            type: string
-   AccountResponse:
+          type: string
+    AccountResponse:
       allOf:
         - $ref: '#/components/schemas/Account'
         - properties:
@@ -303,40 +381,45 @@ components:
               type: boolean
             accountNumber:
               type: number
+    InterestRate:
+      type: object
+      properties:
+        first7days:
+          type: number
+        after7days:
+          type: number
 
-
-   WithdrawalRequest:
+    WithdrawalRequest:
       type: object
       properties:
         amount:
           type: number
         reason:
-          type: string 
-        date:
           type: string
-          format: date
-   WithdrawalResponse:
+        category:
+          type: number
+    WithdrawalResponse:
       type: string
-   BalanceResponse:
+    BalanceResponse:
       type: object
       properties:
-        principalBalance:
+        sold:
           type: number
-        loans:
+        loan:
           type: number
         loanInterest:
           type: number
-   BalanceResponseByDate:
+    BalanceResponseByDate:
       type: object
       properties:
-        balance: 
+        balance:
           type: number
         date:
           type: string
           format: date
         accountId:
           type: integer
-   DepositRequest:
+    DepositRequest:
       type: object
       properties:
         amount:
@@ -346,70 +429,76 @@ components:
         effectiveDate:
           type: string
           format: date
-        registrationDate:
-          type: string
-          format: date
-   DepositResponse:
+        category:
+          type: integer
+    DepositResponse:
       type: object
       properties:
         message:
           type: string
-   TransferRequest:
+    TransferRequest:
       type: object
       properties:
+        senderAccount:
+          type: number
         amount:
           type: number
         reason:
           type: string
-        effectiveDate:
-          type: string
-          format: date
-        registrationDate:
-          type: string
-          format: date
-        destinationAccount:
+
+        category:
           type: integer
-        sameBank:
-          type: boolean
-   TransferResponse:
+    Transfer:
+      allOf:
+        - $ref: '#/components/schemas/TransferRequest'
+        - properties:
+            recipientAccount:
+              type: number
+    MultipleTransfer:
+      allOf:
+        - $ref: '#/components/schemas/TransferRequest'
+        - properties:
+            recipientAccounts:
+              type: array
+              items:
+                type: number
+
+
+    ScheduledTransferRequest:
+      allOf:
+        - $ref: '#/components/schemas/TransferRequest'
+        - properties:
+            effectiveDate:
+              type: string
+              format: date
+    TransferResponse:
       type: object
       properties:
         transferReference:
           type: string
         message:
           type: string
-   TransactionCategorizationRequest:
+    accountStatementResponse:
       type: object
       properties:
-        category:
+        date:
           type: string
-        comment:
+          format: date
+        reference:
           type: string
-   TransactionCategorizationResponse:
-      type: object
-      properties:
-        message:
+        reason:
           type: string
-   MultipleTransactionCategorizationRequest:
+        credit:
+          type: number
+        debit:
+          type: number
+        sold:
+          type: number
+
+    CategoryResponse:
       type: object
       properties:
-        transactions:
-          type: array
-          items:
-            $ref: '#/components/schemas/TransactionCategorizationRequest'
-   MultipleTransactionCategorizationResponse:
-      type: object
-      properties:
-        message:
+        categoryName:
           type: string
-   DashboardData:
-      type: object
-      properties:
-        pie_chart_data:
-          type: object
-          additionalProperties:
-            type: number
-        custom_chart_data:
-          type: object
-          additionalProperties:
-            type: number
+        categoryAmountSum:
+          type: number
