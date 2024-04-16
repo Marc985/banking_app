@@ -17,10 +17,10 @@ public class ClientController {
 public Client getById(@PathVariable String idClient){
     return clientRepository.findById(idClient);
 }
-@PostMapping("/client")
+/*@PostMapping("/client")
     public String addClient(@RequestBody  Client client){
-        return clientService.createClient(client);
-}
+        return clientService.(client);
+}*/
 @PutMapping("/client/{idClient}")
     public Client updateClient(@PathVariable String idClient,@RequestBody Client client){
         return clientRepository.updateClientById(idClient,client);

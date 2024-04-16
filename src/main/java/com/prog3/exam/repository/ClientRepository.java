@@ -26,6 +26,21 @@ public class ClientRepository extends  Request<Client> {
     public List<Client> findAll() {
         return super.findAll();
     }
+    public  Client saveOrUpdate(Client client){
+        String sql="insert into client(id_client,name,email,pic) values (?,?,?,?) ON CONFLICT (id_client)" +
+                "DO UPDATE set name=EXCLUDED.name,email=EXCLUDED.email,pic=EXCLUDED.pic";
+        try {
+            PreparedStatement preparedStatement= connection.prepareStatement(sql);
+            preparedStatement.setString(1,client.getIdClient());
+            preparedStatement.setString(2,client.getName());
+            preparedStatement.setString(3,client.getEmail());
+            preparedStatement.setString(4,client.getPic());
+            preparedStatement.executeUpdate();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return client;
+    }
 
     public Client findById(String id){
         String sql="select * from client where id_client=?";
@@ -35,11 +50,10 @@ public class ClientRepository extends  Request<Client> {
             preparedStatement.setString(1,id);
             ResultSet resultSet=preparedStatement.executeQuery();
             while (resultSet.next()){
-                client.setIdClient(resultSet.getString(idClientColumn));
-                client.setFirstName(resultSet.getString(firstNameColumn));
-                client.setLastName(resultSet.getString(lastNameColumn));
-                client.setBirthdate(resultSet.getDate(birthdateColumn));
-                client.setMonthlyNetSalary(resultSet.getDouble(monthlySalaryColumn));
+                client.setIdClient(resultSet.getString("id_client"));
+                client.setName(resultSet.getString("name"));
+                client.setEmail(resultSet.getString("email"));
+                client.setPic(resultSet.getString("pic"));
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -47,7 +61,7 @@ public class ClientRepository extends  Request<Client> {
         return client;
     }
     public Client findByIdAccount(long idAccount){
-        String sql="select client.id_client,first_name,last_name,birthdate,monthly_net_salary  from client inner " +
+        String sql="select client.id_client,name,email,pic from client inner " +
                 "join account on client.id_client=account.id_client where account_number=?";
         Client client=new Client();
         try {
@@ -55,11 +69,10 @@ public class ClientRepository extends  Request<Client> {
             preparedStatement.setLong(1,idAccount);
             ResultSet resultSet= preparedStatement.executeQuery();
             while (resultSet.next()){
-                client.setIdClient(resultSet.getString(idClientColumn));
-                client.setFirstName(resultSet.getString(firstNameColumn));
-                client.setLastName(resultSet.getString(lastNameColumn));
-                client.setMonthlyNetSalary(resultSet.getDouble(monthlySalaryColumn));
-                client.setBirthdate(resultSet.getDate(birthdateColumn));
+                client.setIdClient(resultSet.getString("id_client"));
+                client.setEmail(resultSet.getString("name"));
+                client.setName(resultSet.getString("email"));
+                client.setPic(resultSet.getString("pic"));
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -68,13 +81,13 @@ public class ClientRepository extends  Request<Client> {
 
     }
     public Client updateClientById(String idClient,Client client){
-       String sql= "UPDATE client SET first_name = ?, last_name = ?, monthly_net_salary = ? WHERE id_client = ?";
+       String sql= "UPDATE client SET name = ?, email = ?, pic = ? WHERE id_client = ?";
        try {
            PreparedStatement preparedStatement=connection.prepareStatement(sql);
-           preparedStatement.setString(1,client.getFirstName());
-           preparedStatement.setString(2,client.getLastName());
-           preparedStatement.setDouble(3,client.getMonthlyNetSalary());
-           preparedStatement.setString(4,idClient);
+           preparedStatement.setString(1,client.getName());
+           preparedStatement.setString(2,client.getEmail());
+           preparedStatement.setString(3,client.getPic());
+           preparedStatement.setString(4,client.getIdClient());
            int result=preparedStatement.executeUpdate();
 
 

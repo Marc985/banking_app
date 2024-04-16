@@ -44,8 +44,7 @@ public class WithdrawalService {
 
 
 
-        double allowedCredit = client.getMonthlyNetSalary() / 3;
-        if ((allowedCredit + actualSold) < amount) {
+        if (( actualSold) < amount) {
             return "The allowed credit + your actual sold don't cover the withdrawal";
         }
 

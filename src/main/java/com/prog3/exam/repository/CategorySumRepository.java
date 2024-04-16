@@ -25,7 +25,7 @@ public class CategorySumRepository {
             preparedStatement.setDate(2,startDate);
             preparedStatement.setDate(3,endDate);
             ResultSet resultSet= preparedStatement.executeQuery();
-            String categoryNameColumn="category_name";
+            String categoryNameColumn="category_type";
             String categoryTotalColumn="category_amount_sum";
             while (resultSet.next()){
                 CategorySum categorySum=new CategorySum();
