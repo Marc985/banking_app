@@ -43,12 +43,8 @@ ClientService clientService;
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
 
-                .oauth2Login(oauth2Login->oauth2Login
-                        .userInfoEndpoint(userInfo->userInfo
-                                .userService(clientService)
-                        )
-
-                        .successHandler(new Oauth2LoginSuccessHandler())
+                .oauth2ResourceServer(oauth2-> oauth2
+                        .jwt(Customizer.withDefaults())
                 );
 
         return http.build();
