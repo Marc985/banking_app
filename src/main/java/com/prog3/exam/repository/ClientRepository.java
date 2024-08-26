@@ -8,6 +8,7 @@ import javax.swing.text.html.HTMLDocument;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -26,19 +27,29 @@ public class ClientRepository extends  Request<Client> {
     public List<Client> findAll() {
         return super.findAll();
     }
-    public  Client saveOrUpdate(Client client){
-        String sql="insert into client(id_client,name,email,pic) values (?,?,?,?) ON CONFLICT (id_client)" +
-                "DO UPDATE set name=EXCLUDED.name,email=EXCLUDED.email,pic=EXCLUDED.pic";
-        try {
-            PreparedStatement preparedStatement= connection.prepareStatement(sql);
-            preparedStatement.setString(1,client.getIdClient());
-            preparedStatement.setString(2,client.getName());
-            preparedStatement.setString(3,client.getEmail());
-            preparedStatement.setString(4,client.getPic());
-            preparedStatement.executeUpdate();
-        }catch (Exception e){
+    public Client saveOrUpdate(Client client) {
+        String sql = "INSERT INTO client(id_client, name, email, pic) VALUES (?, ?, ?, ?) " +
+                "ON CONFLICT (id_client) DO UPDATE SET name = EXCLUDED.name, " +
+                "email = EXCLUDED.email, pic = EXCLUDED.pic";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+            preparedStatement.setString(1, client.getIdClient());
+            preparedStatement.setString(2, client.getName());
+            preparedStatement.setString(3, client.getEmail());
+            preparedStatement.setString(4, client.getPic());
+
+            int affectedRows = preparedStatement.executeUpdate();
+            if (affectedRows > 0) {
+                System.out.println("Client saved/updated successfully.");
+            } else {
+                System.out.println("No rows affected.");
+            }
+        } catch (SQLException e) {
+            // Utilisez un logger au lieu de printStackTrace dans une vraie application
             e.printStackTrace();
+            throw new RuntimeException("Error saving or updating client.", e);
         }
+
         return client;
     }
 
