@@ -65,7 +65,7 @@ ClientService clientService;
     @Bean
     public CorsConfigurationSource corsConfigurationSource(){
         CorsConfiguration configuration=new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:3000"));
+        configuration.setAllowedOrigins(List.of("http://localhost:3000","https://bank-front-orcin.vercel.app"));
         configuration.addAllowedHeader("*");
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS"));
         configuration.setAllowCredentials(true);
